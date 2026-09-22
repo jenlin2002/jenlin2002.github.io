@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 1 認識新朋友 Meeting New Friends｜美式生活館</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1B3A2F;
+    --bg2: #163026;
+    --paper: #F7F3E8;
+    --paper-sub: #CFE0D1;
+    --yellow: #E8B94A;
+    --green: #7FB69A;
+    --red: #D97A6C;
+    --line: #2A4A3C;
+    --card-bg: rgba(22, 48, 38, 0.85);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--paper);
+    font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: #142921;
+    border-bottom: 1px solid var(--line);
+    padding: 16px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .nav-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--paper-sub);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--line);
+    transition: all 0.15s;
+  }
+  .nav-back:hover {
+    background: rgba(232, 185, 74, 0.15);
+    color: var(--yellow);
+    border-color: var(--yellow);
+  }
+  .hub-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--yellow);
+    background: rgba(232, 185, 74, 0.15);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+    width: 100%;
+    flex: 1;
+  }
+  .unit-hero {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 28px 24px;
+    margin-bottom: 28px;
+  }
+  .unit-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--yellow);
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .unit-title {
+    font-family: 'Kalam', cursive;
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.25;
+    margin-bottom: 8px;
+  }
+  .unit-sub {
+    font-size: 14px;
+    color: var(--paper-sub);
+    margin-bottom: 16px;
+  }
+  .situation-box {
+    background: rgba(0, 0, 0, 0.2);
+    border-left: 3px solid var(--green);
+    padding: 12px 16px;
+    border-radius: 0 10px 10px 0;
+    font-size: 13px;
+    color: #B2D1BD;
+  }
+  .situation-title {
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 4px;
+  }
+
+  /* 模式切換 Tabs */
+  .tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+  .tab-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--paper-sub);
+    padding: 8px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .tab-btn.active {
+    background: var(--yellow);
+    color: #163026;
+    border-color: var(--yellow);
+    font-weight: 700;
+  }
+
+  /* 列表與對話 */
+  .sentence-card {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .sentence-card:hover {
+    border-color: rgba(232, 185, 74, 0.6);
+  }
+  .play-btn {
+    background: rgba(232, 185, 74, 0.15);
+    border: 1px solid rgba(232, 185, 74, 0.3);
+    color: var(--yellow);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .play-btn:hover {
+    background: var(--yellow);
+    color: #163026;
+    transform: scale(1.08);
+  }
+  .sentence-content {
+    flex: 1;
+  }
+  .sentence-en {
+    font-size: 16px;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+    font-family: 'Kalam', cursive, sans-serif;
+  }
+  .sentence-zh {
+    font-size: 13.5px;
+    color: var(--paper-sub);
+  }
+
+  /* 對話樣式 */
+  .dialogue-turn {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .speaker-badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--yellow);
+    font-weight: 700;
+    background: rgba(232, 185, 74, 0.15);
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+  }
+  .turn-en {
+    font-size: 15px;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+  }
+  .turn-zh {
+    font-size: 13px;
+    color: #9AA89C;
+  }
+
+  /* 底部導覽 */
+  .unit-nav-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    gap: 12px;
+  }
+  .nav-step-btn {
+    text-decoration: none;
+    color: var(--paper);
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-step-btn:hover {
+    background: rgba(232, 185, 74, 0.15);
+    border-color: var(--yellow);
+    color: var(--yellow);
+  }
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 12px;
+    color: #5B6B60;
+    border-top: 1px solid var(--line);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="https://jenlin2002.github.io" class="nav-back">
+      <span>← 回首頁總入口</span>
+    </a>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span class="hub-badge">🏛️ 美式生活館</span>
+      <span style="font-size:12px; color:#9AA89C;">Unit 1 / 16</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="unit-hero">
+    <div class="unit-eyebrow">
+      <span>👋</span>
+      <span>社交生活 · UNIT 1</span>
+    </div>
+    <h1 class="unit-title">Unit 1 認識新朋友</h1>
+    <div class="unit-sub">Meeting New Friends</div>
+    <div class="situation-box">
+      <div class="situation-title">📍 情境核心：去室友的朋友跨年派對</div>
+      <div>跨年派對前在宿舍化妝準備，隨後到派對認識新朋友聊家鄉、科系與音樂愛好。</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tabSentences" onclick="switchMode('sentences')">
+      高頻核心句型 (28)
+    </button>
+    <button class="tab-btn" id="tabDialogue" onclick="switchMode('dialogue')">
+      真實情境對話 (19)
+    </button>
+  </div>
+
+  <!-- 核心句型區 -->
+  <div id="sectionSentences">
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('You\'re coming to the party later tonight, right?')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">1. You're coming to the party later tonight, right?</div>
+          <div class="sentence-zh">今晚你會來派對吧？</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Start getting ready.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">2. Start getting ready.</div>
+          <div class="sentence-zh">開始準備（出門）。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I literally just landed and got no fancy outfit.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">3. I literally just landed and got no fancy outfit.</div>
+          <div class="sentence-zh">我剛下飛機，根本沒有帶正式的衣服。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('No worries. / No biggies. / Don\'t worry about it. / It\'s okay.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">4. No worries. / No biggies. / Don't worry about it. / It's okay.</div>
+          <div class="sentence-zh">別擔心。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Nice meeting you. / Nice to meet you.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">5. Nice meeting you. / Nice to meet you.</div>
+          <div class="sentence-zh">很高興認識你。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('My family lives 2 hours away.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">6. My family lives 2 hours away.</div>
+          <div class="sentence-zh">我家人住在離這裡兩小時的地方。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('We moved here 10 years ago from Virginia.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">7. We moved here 10 years ago from Virginia.</div>
+          <div class="sentence-zh">我們十年前從維吉尼亞州搬到這裡。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I\'ve never been there.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">8. I've never been there.</div>
+          <div class="sentence-zh">我從沒去過那裡。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I would like to visit one day.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">9. I would like to visit one day.</div>
+          <div class="sentence-zh">我希望有一天能去那裡。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('There are a lot of museums and historical sites to visit.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">10. There are a lot of museums and historical sites to visit.</div>
+          <div class="sentence-zh">那裡有很多博物館和歷史景點可以參觀。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I\'d imagine.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">11. I'd imagine.</div>
+          <div class="sentence-zh">我想也是。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Considering it\'s one of the oldest cities.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">12. Considering it's one of the oldest cities.</div>
+          <div class="sentence-zh">畢竟那是最古老的城市之一。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('What\'s your major?')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">13. What's your major?</div>
+          <div class="sentence-zh">你的主修是什麼？</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I am in Beasley School of Law.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">14. I am in Beasley School of Law.</div>
+          <div class="sentence-zh">我就讀於 Beasley 法學院。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('But I\'m actually more interested in making music or playing pickleball.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">15. But I'm actually more interested in making music or playing pickleball.</div>
+          <div class="sentence-zh">但我其實更喜歡製作音樂或玩匹克球。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I\'ve always wanted to try pickleball.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">16. I've always wanted to try pickleball.</div>
+          <div class="sentence-zh">我一直想打打看匹克球。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('It varies. / It depends.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">17. It varies. / It depends.</div>
+          <div class="sentence-zh">看情況 / 不一定。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I make mostly country and jazz music.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">18. I make mostly country and jazz music.</div>
+          <div class="sentence-zh">我主要是做鄉村音樂和爵士樂。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('What brought you back to business school?')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">19. What brought you back to business school?</div>
+          <div class="sentence-zh">你怎麼會想回商學院？</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Mostly I want to be an independent musician.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">20. Mostly I want to be an independent musician.</div>
+          <div class="sentence-zh">主要是因為我想當獨立音樂人。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('My father encouraged me to come back to school.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">21. My father encouraged me to come back to school.</div>
+          <div class="sentence-zh">我父親鼓勵我回到學校。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('You have a wise dad.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">22. You have a wise dad.</div>
+          <div class="sentence-zh">妳有一位很有智慧的爸爸。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I assume / suppose you are gonna practice law?')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">23. I assume / suppose you are gonna practice law?</div>
+          <div class="sentence-zh">我猜你將來會當執業律師吧？</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I don\'t think that\'s gonna / going to happen.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">24. I don't think that's gonna / going to happen.</div>
+          <div class="sentence-zh">我覺得應該不會。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('You should pursue / go after it.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">25. You should pursue / go after it.</div>
+          <div class="sentence-zh">你應該追求那個目標。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Whatever it is that is true to your heart!')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">26. Whatever it is that is true to your heart!</div>
+          <div class="sentence-zh">做妳真正熱愛的事情！</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Go grab some sliders and alcohol.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">27. Go grab some sliders and alcohol.</div>
+          <div class="sentence-zh">去拿點小漢堡和酒。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I\'ll see you on the rooftop for the countdown later.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">28. I'll see you on the rooftop for the countdown later.</div>
+          <div class="sentence-zh">等會倒數時屋頂見喔！</div>
+        </div>
+      </div>
+    
+  </div>
+
+  <!-- 情境對話區 -->
+  <div id="sectionDialogue" style="display:none;">
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Roommate Daisy (室友 Daisy)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Hey! You’re coming to the party later tonight, right?')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Hey! You’re coming to the party later tonight, right?</div>
+        <div class="turn-zh">嘿！今晚你會來派對吧？</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Me (我)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Oh yeah! What time does it start?')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Oh yeah! What time does it start?</div>
+        <div class="turn-zh">哦，當然！派對什麼時候開始？</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Roommate Daisy (室友 Daisy)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('At eight!')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">At eight!</div>
+        <div class="turn-zh">八點！</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Me (我)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Sweet. I’ll start getting ready.')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Sweet. I’ll start getting ready.</div>
+        <div class="turn-zh">太棒了！那我開始準備。</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Roommate Daisy (室友 Daisy)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('You can borrow my pink dress. I have two dresses and I think you will look great in the pink one!')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">You can borrow my pink dress. I have two dresses and I think you will look great in the pink one!</div>
+        <div class="turn-zh">你可以借我的粉色洋裝。我有兩件洋裝，我覺得你穿粉色那件會很好看！</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Me (我)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Awww that would be great since I literally just landed and got no fancy outfit.')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Awww that would be great since I literally just landed and got no fancy outfit.</div>
+        <div class="turn-zh">哇，那太好了！因為我剛下飛機，根本沒有帶正式的衣服。</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Roommate Daisy (室友 Daisy)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('No worries! I got you, girl. Let’s start getting ready!')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">No worries! I got you, girl. Let’s start getting ready!</div>
+        <div class="turn-zh">不用擔心！我幫你搞定，女孩～我們一起開始準備吧！</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Jessica (新朋友 Jessica)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('So you’re Daisy’s new roomie, right?')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">So you’re Daisy’s new roomie, right?</div>
+        <div class="turn-zh">所以妳是 Daisy 的新室友，對吧？</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Me (我)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Yeah, hi! Nice meeting you.')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Yeah, hi! Nice meeting you.</div>
+        <div class="turn-zh">對啊，嗨！很高興認識妳。</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Jessica (新朋友 Jessica)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Hi, I’m Jessica. So… where are you from?')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Hi, I’m Jessica. So… where are you from?</div>
+        <div class="turn-zh">嗨，我是 Jessica。妳來自哪裡？</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Me (我)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('I’m from Taiwan!')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">I’m from Taiwan!</div>
+        <div class="turn-zh">我來自台灣！</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Jessica (新朋友 Jessica)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Wow, that’s nice. I have a friend who’s also from Taiwan! Well, I’m from Philly, but my family lives 2 hours away and we moved here 10 years ago from Virginia.')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Wow, that’s nice. I have a friend who’s also from Taiwan! Well, I’m from Philly, but my family lives 2 hours away and we moved here 10 years ago from Virginia.</div>
+        <div class="turn-zh">哇，真棒！我有一個朋友也來自台灣！我來自費城，但我家人住在離這裡兩小時的地方，我們十年前從維吉尼亞搬到這裡。</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Me (我)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Sweet! I’ve never been there but I would like to visit one day!')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Sweet! I’ve never been there but I would like to visit one day!</div>
+        <div class="turn-zh">太酷了！我從沒去過那裡，但我希望有一天能去看看！</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Jessica (新朋友 Jessica)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Yeah, for sure you should! There are a lot of museums and historical sites to visit.')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Yeah, for sure you should! There are a lot of museums and historical sites to visit.</div>
+        <div class="turn-zh">妳一定要去！那裡有很多博物館和歷史景點可以參觀。</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Me (我)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('I’d imagine, considering it’s one of the oldest cities. What’s your major?')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">I’d imagine, considering it’s one of the oldest cities. What’s your major?</div>
+        <div class="turn-zh">我可以想像，畢竟那是最古老的城市之一。妳主修什麼？</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Jessica (新朋友 Jessica)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Nice! I’m in Fox Business School. But I’m actually more interested in making music or playing pickleball.')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Nice! I’m in Fox Business School. But I’m actually more interested in making music or playing pickleball.</div>
+        <div class="turn-zh">很棒！我在 Fox 商學院。但我其實更喜歡製作音樂或玩匹克球。</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Me (我)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('I’ve always wanted to try pickleball! What kind of music do you make?')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">I’ve always wanted to try pickleball! What kind of music do you make?</div>
+        <div class="turn-zh">我一直想試試匹克球！妳做什麼類型的音樂？</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Jessica (新朋友 Jessica)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('It varies. Mostly country and jazz. That’s a good thing! I’m gonna go grab some sliders and alcohol.')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">It varies. Mostly country and jazz. That’s a good thing! I’m gonna go grab some sliders and alcohol.</div>
+        <div class="turn-zh">各種都有，主要是鄉村和爵士樂。我要去拿點迷你漢堡和酒。</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Me (我)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Aight. I’ll see you on the rooftop for the countdown later!')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Aight. I’ll see you on the rooftop for the countdown later!</div>
+        <div class="turn-zh">好啊。等會倒數時屋頂見！</div>
+      </div>
+    
+  </div>
+
+  <!-- 上下一單元快捷 -->
+  <div class="unit-nav-footer">
+    <span style="opacity:0.3; font-size:13px;">已是第一單元</span>
+    <a href="https://jenlin2002.github.io" class="nav-step-btn" style="border-color:var(--yellow); color:var(--yellow);">總首頁</a>
+    <a href="unit2.html" class="nav-step-btn">下一單元：U2 →</a>
+  </div>
+</main>
+
+<footer>
+  美式生活館 American Life Hub · Branden &amp; Melissa 英文成長園地
+</footer>
+
+<script>
+  function switchMode(mode) {
+    const sSec = document.getElementById('sectionSentences');
+    const dSec = document.getElementById('sectionDialogue');
+    const sBtn = document.getElementById('tabSentences');
+    const dBtn = document.getElementById('tabDialogue');
+    if (mode === 'sentences') {
+      sSec.style.display = 'block';
+      dSec.style.display = 'none';
+      sBtn.classList.add('active');
+      dBtn.classList.remove('active');
+    } else {
+      sSec.style.display = 'none';
+      dSec.style.display = 'block';
+      sBtn.classList.remove('active');
+      dBtn.classList.add('active');
+    }
+  }
+
+  function speakText(text) {
+    if (!window.speechSynthesis) {
+      alert('您的瀏覽器不支援語音合成播放');
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = 0.95;
+    window.speechSynthesis.speak(u);
+  }
+</script>
+
+</body>
+</html>

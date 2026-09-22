@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 10 心靈對話 Heart-to-Heart Talk｜美式生活館</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1B3A2F;
+    --bg2: #163026;
+    --paper: #F7F3E8;
+    --paper-sub: #CFE0D1;
+    --yellow: #E8B94A;
+    --green: #7FB69A;
+    --red: #D97A6C;
+    --line: #2A4A3C;
+    --card-bg: rgba(22, 48, 38, 0.85);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--paper);
+    font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: #142921;
+    border-bottom: 1px solid var(--line);
+    padding: 16px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .nav-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--paper-sub);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--line);
+    transition: all 0.15s;
+  }
+  .nav-back:hover {
+    background: rgba(232, 185, 74, 0.15);
+    color: var(--yellow);
+    border-color: var(--yellow);
+  }
+  .hub-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--yellow);
+    background: rgba(232, 185, 74, 0.15);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+    width: 100%;
+    flex: 1;
+  }
+  .unit-hero {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 28px 24px;
+    margin-bottom: 28px;
+  }
+  .unit-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--yellow);
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .unit-title {
+    font-family: 'Kalam', cursive;
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.25;
+    margin-bottom: 8px;
+  }
+  .unit-sub {
+    font-size: 14px;
+    color: var(--paper-sub);
+    margin-bottom: 16px;
+  }
+  .situation-box {
+    background: rgba(0, 0, 0, 0.2);
+    border-left: 3px solid var(--green);
+    padding: 12px 16px;
+    border-radius: 0 10px 10px 0;
+    font-size: 13px;
+    color: #B2D1BD;
+  }
+  .situation-title {
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 4px;
+  }
+
+  /* 模式切換 Tabs */
+  .tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+  .tab-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--paper-sub);
+    padding: 8px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .tab-btn.active {
+    background: var(--yellow);
+    color: #163026;
+    border-color: var(--yellow);
+    font-weight: 700;
+  }
+
+  /* 列表與對話 */
+  .sentence-card {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .sentence-card:hover {
+    border-color: rgba(232, 185, 74, 0.6);
+  }
+  .play-btn {
+    background: rgba(232, 185, 74, 0.15);
+    border: 1px solid rgba(232, 185, 74, 0.3);
+    color: var(--yellow);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .play-btn:hover {
+    background: var(--yellow);
+    color: #163026;
+    transform: scale(1.08);
+  }
+  .sentence-content {
+    flex: 1;
+  }
+  .sentence-en {
+    font-size: 16px;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+    font-family: 'Kalam', cursive, sans-serif;
+  }
+  .sentence-zh {
+    font-size: 13.5px;
+    color: var(--paper-sub);
+  }
+
+  /* 對話樣式 */
+  .dialogue-turn {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .speaker-badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--yellow);
+    font-weight: 700;
+    background: rgba(232, 185, 74, 0.15);
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+  }
+  .turn-en {
+    font-size: 15px;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+  }
+  .turn-zh {
+    font-size: 13px;
+    color: #9AA89C;
+  }
+
+  /* 底部導覽 */
+  .unit-nav-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    gap: 12px;
+  }
+  .nav-step-btn {
+    text-decoration: none;
+    color: var(--paper);
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-step-btn:hover {
+    background: rgba(232, 185, 74, 0.15);
+    border-color: var(--yellow);
+    color: var(--yellow);
+  }
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 12px;
+    color: #5B6B60;
+    border-top: 1px solid var(--line);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="https://jenlin2002.github.io" class="nav-back">
+      <span>← 回首頁總入口</span>
+    </a>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span class="hub-badge">🏛️ 美式生活館</span>
+      <span style="font-size:12px; color:#9AA89C;">Unit 10 / 16</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="unit-hero">
+    <div class="unit-eyebrow">
+      <span>☕</span>
+      <span>情感陪伴 · UNIT 10</span>
+    </div>
+    <h1 class="unit-title">Unit 10 心靈對話</h1>
+    <div class="unit-sub">Heart-to-Heart Talk</div>
+    <div class="situation-box">
+      <div class="situation-title">📍 情境核心：室友說想跟男友分手</div>
+      <div>客廳深夜心靈傾訴、失戀療傷安慰、價值觀不合與「天涯何處無芳草」鼓勵。</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tabSentences" onclick="switchMode('sentences')">
+      高頻核心句型 (12)
+    </button>
+    <button class="tab-btn" id="tabDialogue" onclick="switchMode('dialogue')">
+      真實情境對話 (5)
+    </button>
+  </div>
+
+  <!-- 核心句型區 -->
+  <div id="sectionSentences">
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Is everything alright?')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">1. Is everything alright?</div>
+          <div class="sentence-zh">一切都還好嗎？</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('My boyfriend and I just broke up.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">2. My boyfriend and I just broke up.</div>
+          <div class="sentence-zh">我和我男朋友剛分手了。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I\'m still processing everything too.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">3. I'm still processing everything too.</div>
+          <div class="sentence-zh">我也還在沉澱這一切。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I\'m sorry to hear that. / Take all the time you need.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">4. I'm sorry to hear that. / Take all the time you need.</div>
+          <div class="sentence-zh">我很遺憾聽到這個消息 / 給自己足夠的時間修復。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('We were not on the same page.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">5. We were not on the same page.</div>
+          <div class="sentence-zh">我們在很多事情上都沒有共同的想法。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('If you think it was the right thing to do, it\'s for the better.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">6. If you think it was the right thing to do, it's for the better.</div>
+          <div class="sentence-zh">如果你認為這是正確的決定，這樣對未來比較好。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('There are plenty of fish in the sea.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">7. There are plenty of fish in the sea.</div>
+          <div class="sentence-zh">天涯何處無芳草。（機會還很多）</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Get out and mingle!')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">8. Get out and mingle!</div>
+          <div class="sentence-zh">出去和人交際吧！</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('The silver lining is that it gives you time to focus on yourself.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">9. The silver lining is that it gives you time to focus on yourself.</div>
+          <div class="sentence-zh">好處是這讓你有時間專注在自己身上。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Sometimes endings are blessings in disguise.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">10. Sometimes endings are blessings in disguise.</div>
+          <div class="sentence-zh">有時候結束其實是化妝的祝福。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('She\'ll come out of it.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">11. She'll come out of it.</div>
+          <div class="sentence-zh">她會走出來的。（從悲傷中恢復）</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Is there anything I can do for you? Maybe movie night tonight?')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">12. Is there anything I can do for you? Maybe movie night tonight?</div>
+          <div class="sentence-zh">有什麼我可以幫忙的嗎？要不要今晚來個電影之夜？</div>
+        </div>
+      </div>
+    
+  </div>
+
+  <!-- 情境對話區 -->
+  <div id="sectionDialogue" style="display:none;">
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Me (我)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Hey Daisy! Why are you so quiet today? Is everything alright?')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Hey Daisy! Why are you so quiet today? Is everything alright?</div>
+        <div class="turn-zh">嘿 Daisy！今天怎麼這麼安靜？還好嗎？</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Roommate Daisy (室友 Daisy)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('My boyfriend and I broke up. We were just not on the same page anymore.')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">My boyfriend and I broke up. We were just not on the same page anymore.</div>
+        <div class="turn-zh">我和男友分手了。我們很多想法已經不在同一個頻率上了。</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Me (我)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Take your time to heal. Plus, there are plenty of fish in the sea! It\'s a blessing in disguise.')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Take your time to heal. Plus, there are plenty of fish in the sea! It's a blessing in disguise.</div>
+        <div class="turn-zh">慢慢療傷，天涯何處無芳草！有時候結束是化妝的祝福。</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Roommate Daisy (室友 Daisy)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Thanks, girl! Maybe movie night tonight with popcorn?')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Thanks, girl! Maybe movie night tonight with popcorn?</div>
+        <div class="turn-zh">謝謝妳！今晚要不要吃爆米花看電影？</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Me (我)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('I\'ll get the popcorn ready! You\'re the best!')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">I'll get the popcorn ready! You're the best!</div>
+        <div class="turn-zh">我來準備爆米花！妳最棒了！</div>
+      </div>
+    
+  </div>
+
+  <!-- 上下一單元快捷 -->
+  <div class="unit-nav-footer">
+    <a href="unit9.html" class="nav-step-btn">← 上一單元：U9</a>
+    <a href="https://jenlin2002.github.io" class="nav-step-btn" style="border-color:var(--yellow); color:var(--yellow);">總首頁</a>
+    <a href="unit11.html" class="nav-step-btn">下一單元：U11 →</a>
+  </div>
+</main>
+
+<footer>
+  美式生活館 American Life Hub · Branden &amp; Melissa 英文成長園地
+</footer>
+
+<script>
+  function switchMode(mode) {
+    const sSec = document.getElementById('sectionSentences');
+    const dSec = document.getElementById('sectionDialogue');
+    const sBtn = document.getElementById('tabSentences');
+    const dBtn = document.getElementById('tabDialogue');
+    if (mode === 'sentences') {
+      sSec.style.display = 'block';
+      dSec.style.display = 'none';
+      sBtn.classList.add('active');
+      dBtn.classList.remove('active');
+    } else {
+      sSec.style.display = 'none';
+      dSec.style.display = 'block';
+      sBtn.classList.remove('active');
+      dBtn.classList.add('active');
+    }
+  }
+
+  function speakText(text) {
+    if (!window.speechSynthesis) {
+      alert('您的瀏覽器不支援語音合成播放');
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = 0.95;
+    window.speechSynthesis.speak(u);
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 5 住家維修 Home Repairs & AC｜美式生活館</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1B3A2F;
+    --bg2: #163026;
+    --paper: #F7F3E8;
+    --paper-sub: #CFE0D1;
+    --yellow: #E8B94A;
+    --green: #7FB69A;
+    --red: #D97A6C;
+    --line: #2A4A3C;
+    --card-bg: rgba(22, 48, 38, 0.85);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--paper);
+    font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: #142921;
+    border-bottom: 1px solid var(--line);
+    padding: 16px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .nav-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--paper-sub);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--line);
+    transition: all 0.15s;
+  }
+  .nav-back:hover {
+    background: rgba(232, 185, 74, 0.15);
+    color: var(--yellow);
+    border-color: var(--yellow);
+  }
+  .hub-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--yellow);
+    background: rgba(232, 185, 74, 0.15);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+    width: 100%;
+    flex: 1;
+  }
+  .unit-hero {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 28px 24px;
+    margin-bottom: 28px;
+  }
+  .unit-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--yellow);
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .unit-title {
+    font-family: 'Kalam', cursive;
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.25;
+    margin-bottom: 8px;
+  }
+  .unit-sub {
+    font-size: 14px;
+    color: var(--paper-sub);
+    margin-bottom: 16px;
+  }
+  .situation-box {
+    background: rgba(0, 0, 0, 0.2);
+    border-left: 3px solid var(--green);
+    padding: 12px 16px;
+    border-radius: 0 10px 10px 0;
+    font-size: 13px;
+    color: #B2D1BD;
+  }
+  .situation-title {
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 4px;
+  }
+
+  /* 模式切換 Tabs */
+  .tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+  .tab-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--paper-sub);
+    padding: 8px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .tab-btn.active {
+    background: var(--yellow);
+    color: #163026;
+    border-color: var(--yellow);
+    font-weight: 700;
+  }
+
+  /* 列表與對話 */
+  .sentence-card {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .sentence-card:hover {
+    border-color: rgba(232, 185, 74, 0.6);
+  }
+  .play-btn {
+    background: rgba(232, 185, 74, 0.15);
+    border: 1px solid rgba(232, 185, 74, 0.3);
+    color: var(--yellow);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .play-btn:hover {
+    background: var(--yellow);
+    color: #163026;
+    transform: scale(1.08);
+  }
+  .sentence-content {
+    flex: 1;
+  }
+  .sentence-en {
+    font-size: 16px;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+    font-family: 'Kalam', cursive, sans-serif;
+  }
+  .sentence-zh {
+    font-size: 13.5px;
+    color: var(--paper-sub);
+  }
+
+  /* 對話樣式 */
+  .dialogue-turn {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .speaker-badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--yellow);
+    font-weight: 700;
+    background: rgba(232, 185, 74, 0.15);
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+  }
+  .turn-en {
+    font-size: 15px;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+  }
+  .turn-zh {
+    font-size: 13px;
+    color: #9AA89C;
+  }
+
+  /* 底部導覽 */
+  .unit-nav-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    gap: 12px;
+  }
+  .nav-step-btn {
+    text-decoration: none;
+    color: var(--paper);
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-step-btn:hover {
+    background: rgba(232, 185, 74, 0.15);
+    border-color: var(--yellow);
+    color: var(--yellow);
+  }
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 12px;
+    color: #5B6B60;
+    border-top: 1px solid var(--line);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="https://jenlin2002.github.io" class="nav-back">
+      <span>← 回首頁總入口</span>
+    </a>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span class="hub-badge">🏛️ 美式生活館</span>
+      <span style="font-size:12px; color:#9AA89C;">Unit 5 / 16</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="unit-hero">
+    <div class="unit-eyebrow">
+      <span>🔧</span>
+      <span>居家生活 · UNIT 5</span>
+    </div>
+    <h1 class="unit-title">Unit 5 住家維修</h1>
+    <div class="unit-sub">Home Repairs & AC</div>
+    <div class="situation-box">
+      <div class="situation-title">📍 情境核心：家裡冷氣壞掉叫修</div>
+      <div>夏天冷氣壓縮機故障、冷媒不足、技工開出分項估價單與考慮長遠換新冷氣。</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tabSentences" onclick="switchMode('sentences')">
+      高頻核心句型 (17)
+    </button>
+    <button class="tab-btn" id="tabDialogue" onclick="switchMode('dialogue')">
+      真實情境對話 (6)
+    </button>
+  </div>
+
+  <!-- 核心句型區 -->
+  <div id="sectionSentences">
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I\'m calling because my AC is not working.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">1. I'm calling because my AC is not working.</div>
+          <div class="sentence-zh">我打電話來是因為我的冷氣壞了。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I was wondering when you guys can come out and check it.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">2. I was wondering when you guys can come out and check it.</div>
+          <div class="sentence-zh">我想詢問你們什麼時候能來檢查一下？</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('It hasn\'t turned on since yesterday.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">3. It hasn't turned on since yesterday.</div>
+          <div class="sentence-zh">它從昨天開始就沒有再啟動。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('We\'ll send him in / out on Monday.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">4. We'll send him in / out on Monday.</div>
+          <div class="sentence-zh">我們會安排他週一過去。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('The (AC) unit is out here in the backyard.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">5. The (AC) unit is out here in the backyard.</div>
+          <div class="sentence-zh">（冷氣）設備在後院這邊。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('The compressor blew out and you are also low on refrigerant.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">6. The compressor blew out and you are also low on refrigerant.</div>
+          <div class="sentence-zh">壓縮機壞掉了，而且你的冷媒也快不足了。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('The total before taxes is gonna be $5,325.25.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">7. The total before taxes is gonna be $5,325.25.</div>
+          <div class="sentence-zh">稅前價格總共是5,325.25美金。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I listed all these problems out on an itemized estimate / statement.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">8. I listed all these problems out on an itemized estimate / statement.</div>
+          <div class="sentence-zh">我把所有問題都列在一份有細項的估價單上了。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Holy moly!')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">9. Holy moly!</div>
+          <div class="sentence-zh">天啊！</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('It\'s gonna run into a lot of problems.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">10. It's gonna run into a lot of problems.</div>
+          <div class="sentence-zh">未來可能會有很多問題。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I would recommend possibly looking at replacing your (AC) unit.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">11. I would recommend possibly looking at replacing your (AC) unit.</div>
+          <div class="sentence-zh">我建議你考慮更換（冷氣）設備。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('In the long run.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">12. In the long run.</div>
+          <div class="sentence-zh">從長遠來看。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I will send you this estimate for repairing your current (AC) unit.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">13. I will send you this estimate for repairing your current (AC) unit.</div>
+          <div class="sentence-zh">我會把修理目前（冷氣）設備的估價單傳給你。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I also noticed the thermostat seems off.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">14. I also noticed the thermostat seems off.</div>
+          <div class="sentence-zh">我也發現恆溫器好像不正常。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('It\'s not reading the temperature correctly.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">15. It's not reading the temperature correctly.</div>
+          <div class="sentence-zh">因為它沒有顯示正確的溫度。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Thanks for stopping by!')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">16. Thanks for stopping by!</div>
+          <div class="sentence-zh">謝謝你過來一趟！</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Anytime / You\'re welcome!')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">17. Anytime / You're welcome!</div>
+          <div class="sentence-zh">不客氣！隨時為您服務！</div>
+        </div>
+      </div>
+    
+  </div>
+
+  <!-- 情境對話區 -->
+  <div id="sectionDialogue" style="display:none;">
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">AC Staff (客服)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Hello this is air conditioning USA. How can I help you?')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Hello this is air conditioning USA. How can I help you?</div>
+        <div class="turn-zh">哈囉，這裡是美國冷氣公司。請問我可以如何協助你？</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Me (我)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Hi! I’m calling because my AC is not working. It hasn’t turned on since yesterday.')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Hi! I’m calling because my AC is not working. It hasn’t turned on since yesterday.</div>
+        <div class="turn-zh">嗨！我打電話來是因為我的冷氣壞了，從昨天開始就沒再啟動。</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Technician (技師)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('The unit is out here. Looks like the compressor blew out and you are low on refrigerant.')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">The unit is out here. Looks like the compressor blew out and you are low on refrigerant.</div>
+        <div class="turn-zh">設備在後院。看起來壓縮機壞了，而且冷媒不足。</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Technician (技師)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('The total before taxes is gonna be $5,325.25. Honestly, replacing it is better in the long run.')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">The total before taxes is gonna be $5,325.25. Honestly, replacing it is better in the long run.</div>
+        <div class="turn-zh">稅前估價是 5,325.25 美元。老實說長遠來看換新機更好。</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Me (我)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Holy moly… that’s expensive! I also noticed the thermostat seems off.')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Holy moly… that’s expensive! I also noticed the thermostat seems off.</div>
+        <div class="turn-zh">天啊太貴了！我也注意到恆溫器怪怪的。</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Technician (技師)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('I will send you an itemized estimate with options. Thanks for stopping by! Anytime!')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">I will send you an itemized estimate with options. Thanks for stopping by! Anytime!</div>
+        <div class="turn-zh">我會把分項估價單寄給妳。謝謝妳！不客氣！</div>
+      </div>
+    
+  </div>
+
+  <!-- 上下一單元快捷 -->
+  <div class="unit-nav-footer">
+    <a href="unit4.html" class="nav-step-btn">← 上一單元：U4</a>
+    <a href="https://jenlin2002.github.io" class="nav-step-btn" style="border-color:var(--yellow); color:var(--yellow);">總首頁</a>
+    <a href="unit6.html" class="nav-step-btn">下一單元：U6 →</a>
+  </div>
+</main>
+
+<footer>
+  美式生活館 American Life Hub · Branden &amp; Melissa 英文成長園地
+</footer>
+
+<script>
+  function switchMode(mode) {
+    const sSec = document.getElementById('sectionSentences');
+    const dSec = document.getElementById('sectionDialogue');
+    const sBtn = document.getElementById('tabSentences');
+    const dBtn = document.getElementById('tabDialogue');
+    if (mode === 'sentences') {
+      sSec.style.display = 'block';
+      dSec.style.display = 'none';
+      sBtn.classList.add('active');
+      dBtn.classList.remove('active');
+    } else {
+      sSec.style.display = 'none';
+      dSec.style.display = 'block';
+      sBtn.classList.remove('active');
+      dBtn.classList.add('active');
+    }
+  }
+
+  function speakText(text) {
+    if (!window.speechSynthesis) {
+      alert('您的瀏覽器不支援語音合成播放');
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = 0.95;
+    window.speechSynthesis.speak(u);
+  }
+</script>
+
+</body>
+</html>

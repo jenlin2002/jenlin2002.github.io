@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 7 健康與醫療 Health & Medical Care｜美式生活館</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1B3A2F;
+    --bg2: #163026;
+    --paper: #F7F3E8;
+    --paper-sub: #CFE0D1;
+    --yellow: #E8B94A;
+    --green: #7FB69A;
+    --red: #D97A6C;
+    --line: #2A4A3C;
+    --card-bg: rgba(22, 48, 38, 0.85);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--paper);
+    font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: #142921;
+    border-bottom: 1px solid var(--line);
+    padding: 16px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .nav-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--paper-sub);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--line);
+    transition: all 0.15s;
+  }
+  .nav-back:hover {
+    background: rgba(232, 185, 74, 0.15);
+    color: var(--yellow);
+    border-color: var(--yellow);
+  }
+  .hub-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--yellow);
+    background: rgba(232, 185, 74, 0.15);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+    width: 100%;
+    flex: 1;
+  }
+  .unit-hero {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 28px 24px;
+    margin-bottom: 28px;
+  }
+  .unit-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--yellow);
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .unit-title {
+    font-family: 'Kalam', cursive;
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.25;
+    margin-bottom: 8px;
+  }
+  .unit-sub {
+    font-size: 14px;
+    color: var(--paper-sub);
+    margin-bottom: 16px;
+  }
+  .situation-box {
+    background: rgba(0, 0, 0, 0.2);
+    border-left: 3px solid var(--green);
+    padding: 12px 16px;
+    border-radius: 0 10px 10px 0;
+    font-size: 13px;
+    color: #B2D1BD;
+  }
+  .situation-title {
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 4px;
+  }
+
+  /* 模式切換 Tabs */
+  .tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+  .tab-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--paper-sub);
+    padding: 8px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .tab-btn.active {
+    background: var(--yellow);
+    color: #163026;
+    border-color: var(--yellow);
+    font-weight: 700;
+  }
+
+  /* 列表與對話 */
+  .sentence-card {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .sentence-card:hover {
+    border-color: rgba(232, 185, 74, 0.6);
+  }
+  .play-btn {
+    background: rgba(232, 185, 74, 0.15);
+    border: 1px solid rgba(232, 185, 74, 0.3);
+    color: var(--yellow);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .play-btn:hover {
+    background: var(--yellow);
+    color: #163026;
+    transform: scale(1.08);
+  }
+  .sentence-content {
+    flex: 1;
+  }
+  .sentence-en {
+    font-size: 16px;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+    font-family: 'Kalam', cursive, sans-serif;
+  }
+  .sentence-zh {
+    font-size: 13.5px;
+    color: var(--paper-sub);
+  }
+
+  /* 對話樣式 */
+  .dialogue-turn {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .speaker-badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--yellow);
+    font-weight: 700;
+    background: rgba(232, 185, 74, 0.15);
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+  }
+  .turn-en {
+    font-size: 15px;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+  }
+  .turn-zh {
+    font-size: 13px;
+    color: #9AA89C;
+  }
+
+  /* 底部導覽 */
+  .unit-nav-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    gap: 12px;
+  }
+  .nav-step-btn {
+    text-decoration: none;
+    color: var(--paper);
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-step-btn:hover {
+    background: rgba(232, 185, 74, 0.15);
+    border-color: var(--yellow);
+    color: var(--yellow);
+  }
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 12px;
+    color: #5B6B60;
+    border-top: 1px solid var(--line);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="https://jenlin2002.github.io" class="nav-back">
+      <span>← 回首頁總入口</span>
+    </a>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span class="hub-badge">🏛️ 美式生活館</span>
+      <span style="font-size:12px; color:#9AA89C;">Unit 7 / 16</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="unit-hero">
+    <div class="unit-eyebrow">
+      <span>🏥</span>
+      <span>健康醫療 · UNIT 7</span>
+    </div>
+    <h1 class="unit-title">Unit 7 健康與醫療</h1>
+    <div class="unit-sub">Health & Medical Care</div>
+    <div class="situation-box">
+      <div class="situation-title">📍 情境核心：發燒拉肚子掛病求診</div>
+      <div>前往急診 Urgent Care 掛號填表、向醫生描述發燒脫水與疑似腸胃炎症狀、給予用藥建議。</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tabSentences" onclick="switchMode('sentences')">
+      高頻核心句型 (20)
+    </button>
+    <button class="tab-btn" id="tabDialogue" onclick="switchMode('dialogue')">
+      真實情境對話 (5)
+    </button>
+  </div>
+
+  <!-- 核心句型區 -->
+  <div id="sectionSentences">
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('What brings you here today?')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">1. What brings you here today?</div>
+          <div class="sentence-zh">今天哪裡不舒服？</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I think I have a fever.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">2. I think I have a fever.</div>
+          <div class="sentence-zh">我覺得我發燒了。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I will need your (picture) id.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">3. I will need your (picture) id.</div>
+          <div class="sentence-zh">我需要您的身份證件。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Date of birth?')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">4. Date of birth?</div>
+          <div class="sentence-zh">出生日期？</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I also need the insurance card.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">5. I also need the insurance card.</div>
+          <div class="sentence-zh">我也需要你的醫療保險卡。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Fill out this top portion of the form, sign, and put down the date.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">6. Fill out this top portion of the form, sign, and put down the date.</div>
+          <div class="sentence-zh">請填寫表格上半部，簽名並填上日期。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Take a seat there and the doctor will call you.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">7. Take a seat there and the doctor will call you.</div>
+          <div class="sentence-zh">請在那邊坐一下，醫生會叫您。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I\'ve been having a fever since yesterday, diarrhea too.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">8. I've been having a fever since yesterday, diarrhea too.</div>
+          <div class="sentence-zh">我從昨天開始發燒，還有拉肚子。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('At that point, I hadn\'t eaten anything for 30 hours.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">9. At that point, I hadn't eaten anything for 30 hours.</div>
+          <div class="sentence-zh">當時我已經大概30個小時沒吃東西了。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I started getting chills.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">10. I started getting chills.</div>
+          <div class="sentence-zh">我開始發冷。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Any exposure to someone with a flu?')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">11. Any exposure to someone with a flu?</div>
+          <div class="sentence-zh">你是否有接觸有流感的人？</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('You\'re negative for covid, and also negative for the flu.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">12. You're negative for covid, and also negative for the flu.</div>
+          <div class="sentence-zh">你的 COVID 和流感檢測結果都是陰性的。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Is it associated with anything that you ate?')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">13. Is it associated with anything that you ate?</div>
+          <div class="sentence-zh">會不會是跟你吃的東西有關？</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('I just had some leftover pasta from a restaurant.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">14. I just had some leftover pasta from a restaurant.</div>
+          <div class="sentence-zh">我只是吃了餐廳的義大利麵剩菜。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Are you allergic to any medications?')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">15. Are you allergic to any medications?</div>
+          <div class="sentence-zh">你有對任何藥物過敏嗎？</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Your heart rate is a bit elevated.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">16. Your heart rate is a bit elevated.</div>
+          <div class="sentence-zh">你的心率有點偏高。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Give them a stool sample.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">17. Give them a stool sample.</div>
+          <div class="sentence-zh">給他們送糞便樣本。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Chills and headaches are primarily caused by dehydration.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">18. Chills and headaches are primarily caused by dehydration.</div>
+          <div class="sentence-zh">發冷和頭痛主要是因為脫水造成的。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Try to stay away from spicy food, greasy food, and dairy.')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">19. Try to stay away from spicy food, greasy food, and dairy.</div>
+          <div class="sentence-zh">盡量避免辛辣食物、油膩食物和乳製品。</div>
+        </div>
+      </div>
+    
+      <div class="sentence-card">
+        <button class="play-btn" onclick="speakText('Electrolyte drinks will help you a lot. Feel better!')" title="點擊發音">
+          🔊
+        </button>
+        <div class="sentence-content">
+          <div class="sentence-en">20. Electrolyte drinks will help you a lot. Feel better!</div>
+          <div class="sentence-zh">電解質飲料對你會有很大的幫助。希望你早日康復！</div>
+        </div>
+      </div>
+    
+  </div>
+
+  <!-- 情境對話區 -->
+  <div id="sectionDialogue" style="display:none;">
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Receptionist (櫃台)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Hi, what brings you here today? I will need your photo ID and insurance card.')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Hi, what brings you here today? I will need your photo ID and insurance card.</div>
+        <div class="turn-zh">您好今天哪裡不舒服？我需要看您的證件和保險卡。</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Me (我)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('I think I have a fever and diarrhea since last night. I started getting chills.')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">I think I have a fever and diarrhea since last night. I started getting chills.</div>
+        <div class="turn-zh">我好像發燒拉肚子了，昨天開始發冷。</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Doctor (醫生)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Good news: you\'re negative for COVID and flu. Did you eat any leftover food?')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Good news: you're negative for COVID and flu. Did you eat any leftover food?</div>
+        <div class="turn-zh">好消息：流感與新冠都是陰性。妳最近有吃隔夜剩菜嗎？</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Me (我)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Yes, some leftover pasta. Not allergic to any medications.')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Yes, some leftover pasta. Not allergic to any medications.</div>
+        <div class="turn-zh">有，吃了些剩義大利麵。我對藥物沒有過敏。</div>
+      </div>
+    
+      <div class="dialogue-turn">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="speaker-badge">Doctor (醫生)</span>
+          <button class="play-btn" style="width:28px; height:28px; font-size:12px;" onclick="speakText('Headaches and chills are from dehydration. Drink electrolyte drinks and avoid dairy. Feel better!')" title="發音">
+            🔊
+          </button>
+        </div>
+        <div class="turn-en">Headaches and chills are from dehydration. Drink electrolyte drinks and avoid dairy. Feel better!</div>
+        <div class="turn-zh">頭痛發冷主要來自脫水。多喝電解質水、別吃乳製品。祝早日康復！</div>
+      </div>
+    
+  </div>
+
+  <!-- 上下一單元快捷 -->
+  <div class="unit-nav-footer">
+    <a href="unit6.html" class="nav-step-btn">← 上一單元：U6</a>
+    <a href="https://jenlin2002.github.io" class="nav-step-btn" style="border-color:var(--yellow); color:var(--yellow);">總首頁</a>
+    <a href="unit8.html" class="nav-step-btn">下一單元：U8 →</a>
+  </div>
+</main>
+
+<footer>
+  美式生活館 American Life Hub · Branden &amp; Melissa 英文成長園地
+</footer>
+
+<script>
+  function switchMode(mode) {
+    const sSec = document.getElementById('sectionSentences');
+    const dSec = document.getElementById('sectionDialogue');
+    const sBtn = document.getElementById('tabSentences');
+    const dBtn = document.getElementById('tabDialogue');
+    if (mode === 'sentences') {
+      sSec.style.display = 'block';
+      dSec.style.display = 'none';
+      sBtn.classList.add('active');
+      dBtn.classList.remove('active');
+    } else {
+      sSec.style.display = 'none';
+      dSec.style.display = 'block';
+      sBtn.classList.remove('active');
+      dBtn.classList.add('active');
+    }
+  }
+
+  function speakText(text) {
+    if (!window.speechSynthesis) {
+      alert('您的瀏覽器不支援語音合成播放');
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = 0.95;
+    window.speechSynthesis.speak(u);
+  }
+</script>
+
+</body>
+</html>
