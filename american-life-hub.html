@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>美式生活館｜American Life Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #1B3A2F;
+    --bg2: #163026;
+    --paper: #F7F3E8;
+    --paper2: #EFE9D8;
+    --yellow: #E8B94A;
+    --green: #7FB69A;
+    --red: #D97A6C;
+    --brown: #B08B5A;
+    --line: #2A4A3C;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg); color:var(--paper);
+    font-family:'Noto Sans TC', sans-serif;
+    min-height:100vh;
+  }
+  header{
+    padding:50px 24px 30px; text-align:center;
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+  .back-link{
+    position:absolute; left:24px; top:24px;
+    font-family:'Noto Sans TC', sans-serif; font-size:13px;
+    color:#9AA89C; text-decoration:none;
+    border:1px solid var(--line); border-radius:8px; padding:6px 14px;
+  }
+  .back-link:hover{ border-color:var(--yellow); color:var(--yellow); }
+  .eyebrow{
+    font-family:'Space Mono', monospace; font-size:12px; letter-spacing:4px;
+    color:var(--yellow); font-weight:700; margin-bottom:8px;
+  }
+  h1{ font-family:'Kalam', cursive; font-size:34px; margin-bottom:8px; }
+  .sub{ font-size:14px; color:#9AA89C; }
+  main{ max-width:1000px; margin:0 auto; padding:40px 20px 80px; }
+  .section-title{
+    font-family:'Space Mono', monospace; font-size:12px; letter-spacing:2px;
+    color:var(--green); margin:0 0 20px; padding-bottom:8px; border-bottom:1px solid var(--line);
+  }
+  .unit-grid{
+    display:grid; grid-template-columns:repeat(4, 1fr);
+    gap:12px;
+  }
+  @media (max-width:1000px){ .unit-grid{ grid-template-columns:repeat(2, 1fr); } }
+  @media (max-width:560px){ .unit-grid{ grid-template-columns:1fr; } }
+  a.unit-btn{
+    display:block; background:var(--bg2); border:1px solid var(--line); border-radius:12px;
+    padding:16px 16px; color:var(--paper); text-decoration:none;
+    font-family:'Noto Sans TC', sans-serif; font-size:14px; text-align:center;
+    transition:transform 0.15s, border-color 0.15s;
+  }
+  a.unit-btn:hover{ transform:translateY(-2px); border-color:var(--yellow); color:var(--yellow); }
+  footer{
+    text-align:center; padding:24px; font-size:12px; color:#5B6B60;
+    border-top:1px solid var(--line);
+  }
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="index.html">← 回首頁總入口</a>
+  <div class="eyebrow">AMERICAN LIFE HUB</div>
+  <h1>🏛️ 美式生活館</h1>
+  <div class="sub">生活化實用美語：16個日常情境對話隨身聽、高頻核心句型、發音連播</div>
+</header>
+<main>
+  <div class="section-title">16 個單元</div>
+  <div class="unit-grid">
+    <a class="unit-btn" href="unit1.html">Unit 1 認識新朋友</a>
+    <a class="unit-btn" href="unit2.html">Unit 2 家庭對話</a>
+    <a class="unit-btn" href="unit3.html">Unit 3 餐廳點餐</a>
+    <a class="unit-btn" href="unit4.html">Unit 4 購物與結帳</a>
+    <a class="unit-btn" href="unit5.html">Unit 5 住家維修</a>
+    <a class="unit-btn" href="unit6.html">Unit 6 旅行與住宿</a>
+    <a class="unit-btn" href="unit7.html">Unit 7 健康與醫療</a>
+    <a class="unit-btn" href="unit8.html">Unit 8 客訴與抱怨</a>
+    <a class="unit-btn" href="unit9.html">Unit 9 交朋友閒聊</a>
+    <a class="unit-btn" href="unit10.html">Unit 10 心靈對話</a>
+    <a class="unit-btn" href="unit11.html">Unit 11 開玩笑幽默</a>
+    <a class="unit-btn" href="unit12.html">Unit 12 生活分享與邀約</a>
+    <a class="unit-btn" href="unit13.html">Unit 13 工作與面試</a>
+    <a class="unit-btn" href="unit14.html">Unit 14 工作閒聊</a>
+    <a class="unit-btn" href="unit15.html">Unit 15 新聞時事探討</a>
+    <a class="unit-btn" href="unit16.html">Unit 16 價值觀傳遞</a>
+  </div>
+</main>
+<footer>美式生活館・持續擴充日常單字與生活 VLOG 內容中。</footer>
+</body>
+</html>
