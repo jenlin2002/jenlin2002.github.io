@@ -1,5 +1,3 @@
-code
-Html
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -70,6 +68,28 @@ Html
     background:transparent; border:2px dashed var(--line); border-radius:16px;
     padding:24px 20px; color:#5B6B60; font-size:13px; text-align:center; min-height:140px;
   }
+  .unit-links-row{
+    grid-column:1 / -1;
+    background:var(--bg2); border:1px solid var(--line); border-radius:16px;
+    padding:22px 20px;
+  }
+  .unit-links-title{
+    font-family:'Kalam', cursive; font-size:16px; color:var(--yellow);
+    margin-bottom:14px;
+  }
+  .unit-links-grid{
+    display:grid; grid-template-columns:repeat(4, 1fr);
+    gap:10px;
+  }
+  @media (max-width:1000px){ .unit-links-grid{ grid-template-columns:repeat(2, 1fr); } }
+  @media (max-width:560px){ .unit-links-grid{ grid-template-columns:1fr; } }
+  a.unit-btn{
+    display:block; background:var(--bg); border:1px solid var(--line); border-radius:10px;
+    padding:10px 14px; color:var(--paper); text-decoration:none;
+    font-family:'Noto Sans TC', sans-serif; font-size:13px; text-align:center;
+    transition:transform 0.15s, border-color 0.15s;
+  }
+  a.unit-btn:hover{ transform:translateY(-2px); border-color:var(--yellow); color:var(--yellow); }
   footer{
     text-align:center; padding:24px; font-size:12px; color:#5B6B60;
     border-top:1px solid var(--line);
@@ -115,6 +135,27 @@ Html
       <div class="card-desc">生活化實用美語：16個日常情境對話隨身聽、高頻核心句型、發音連播，後續擴充日常單字與生活VLOG。</div>
       <span class="card-tag tag-listening">16 UNITS · 生活實境</span>
     </a>
+    <div class="unit-links-row">
+      <div class="unit-links-title">🏛️ 美式生活館・16 個單元快速進入</div>
+      <div class="unit-links-grid">
+        <a class="unit-btn" href="unit1.html">Unit 1 認識新朋友</a>
+        <a class="unit-btn" href="unit2.html">Unit 2 家庭對話</a>
+        <a class="unit-btn" href="unit3.html">Unit 3 餐廳點餐</a>
+        <a class="unit-btn" href="unit4.html">Unit 4 購物與結帳</a>
+        <a class="unit-btn" href="unit5.html">Unit 5 住家維修</a>
+        <a class="unit-btn" href="unit6.html">Unit 6 旅行與住宿</a>
+        <a class="unit-btn" href="unit7.html">Unit 7 健康與醫療</a>
+        <a class="unit-btn" href="unit8.html">Unit 8 客訴與抱怨</a>
+        <a class="unit-btn" href="unit9.html">Unit 9 交朋友閒聊</a>
+        <a class="unit-btn" href="unit10.html">Unit 10 心靈對話</a>
+        <a class="unit-btn" href="unit11.html">Unit 11 開玩笑幽默</a>
+        <a class="unit-btn" href="unit12.html">Unit 12 生活分享與邀約</a>
+        <a class="unit-btn" href="unit13.html">Unit 13 工作與面試</a>
+        <a class="unit-btn" href="unit14.html">Unit 14 工作閒聊</a>
+        <a class="unit-btn" href="unit15.html">Unit 15 新聞時事探討</a>
+        <a class="unit-btn" href="unit16.html">Unit 16 價值觀傳遞</a>
+      </div>
+    </div>
     <div class="placeholder-card">
       在這裡新增下一個子網站的卡片
     </div>
