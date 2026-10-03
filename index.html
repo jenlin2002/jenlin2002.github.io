@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Branden & Melissa 英文成長園地</title>
+<title>BRANDEN & MELISSA 成長學習館</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -77,10 +77,11 @@
 <body>
 <header>
   <div class="eyebrow">GROWING UP WITH ENGLISH</div>
-  <h1>Branden &amp; Melissa 英文成長園地</h1>
+  <h1>BRANDEN &amp; MELISSA 成長學習館</h1>
   <div class="sub">所有自製英文學習網站的入口，點卡片進入各個子網站</div>
 </header>
 <main>
+  <div id="ptsHome" style="max-width:560px;margin:0 auto 28px"></div>
   <div class="section-title">所有子網站</div>
   <div class="grid">
     <a class="project-card" href="https://jenlin2002.github.io/english-quiz/" target="_blank">
@@ -110,8 +111,8 @@
     <a class="project-card" href="https://jenlin2002.github.io/daily_life_listening/" target="_blank">
       <div class="card-icon">🏛️</div>
       <div class="card-title">美式生活館｜American Life Hub</div>
-      <div class="card-desc">生活化實用美語：16個日常情境對話隨身聽、高頻核心句型、發音連播，後續擴充日常單字與生活VLOG。</div>
-      <span class="card-tag tag-listening">16 UNITS · 生活實境</span>
+      <div class="card-desc">生活化實用美語，分冊學習：第一冊 16 個日常情境單元（句子矩陣、情境對話、聽寫），再加上 44 個生活場景的規劃，陸續完成並加入影片。</div>
+      <span class="card-tag tag-listening">4 冊 · 44 場景 · 生活實境</span>
     </a>
     <div class="placeholder-card">
       在這裡新增下一個子網站的卡片
@@ -119,5 +120,7 @@
   </div>
 </main>
 <footer>持續建置中，之後每完成一個新網站就會加進對應的分類裡。</footer>
+<script src="points.js"></script>
+<script>if (window.Points) Points.mount(document.getElementById('ptsHome'));</script>
 </body>
 </html>
