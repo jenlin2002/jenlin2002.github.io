@@ -22,6 +22,8 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
   var KIDS = ['BRANDEN', 'MELISSA'], ADMIN = 'PARENT', KNOWN = ['BRANDEN', 'MELISSA', 'PARENT'];
+  // 訪客模式（不用 PIN、不計點數）：使用者 2026-10-04 決定先關閉，要開放時改成 true（三個 repo 的 points.js 都要改）。
+  var GUEST_ENABLED = false;
   // ---------- 登入憑證：PIN 驗證通過後由後端發給，存在這台裝置（同一個網站的所有頁面共用） ----------
   function tokens() { try { return JSON.parse(get('quizPointsTokens') || '{}') || {}; } catch (e) { return {}; } }
   function tokenOf(n) { return tokens()[n] || ''; }
@@ -29,8 +31,10 @@
   function clearToken(n) { var o = tokens(); delete o[n]; set('quizPointsTokens', JSON.stringify(o)); }
   function anyToken() { return KNOWN.some(function (k) { return !!tokenOf(k); }); }
   // ---------- 訪客：不用 PIN、不計點數（名字存在這台裝置；有人用 PIN 登入就自動結束訪客模式） ----------
-  function guestName() { return String(get('pointsGuest') || '').trim(); }
-  function endGuest() { if (!guestName()) return; set('pointsGuest', ''); if (/^訪客/.test(get('quizStudentName') || '')) set('quizStudentName', ''); }
+  function clearGuest() { set('pointsGuest', ''); if (/^訪客/.test(get('quizStudentName') || '')) set('quizStudentName', ''); }
+  function guestName() { return GUEST_ENABLED ? String(get('pointsGuest') || '').trim() : ''; }
+  function endGuest() { if (get('pointsGuest')) clearGuest(); }
+  if (!GUEST_ENABLED && get('pointsGuest')) clearGuest();   // 關閉訪客模式後，清掉裝置上殘留的訪客身分
   function needGate() { return !anyToken() && !guestName(); }
 
   var API = window.Points = {};
@@ -229,11 +233,11 @@
       '<div class="pts-empty" style="padding-top:0">選自己的名字，再輸入 PIN 才能進來。第一次來的人，要先設定自己的 PIN。</div>' +
       '<div class="pts-who">' + KIDS.map(function (k) { return '<button type="button" data-g="' + k + '">我是 ' + k + '</button>'; }).join('') + '</div>' +
       '<div style="text-align:center"><button type="button" class="pts-link" data-g="' + ADMIN + '">我是家長（管理者）</button></div>' +
-      '<div style="text-align:center"><button type="button" class="pts-link" data-guest="open">我是訪客（不用 PIN，不計點數）</button></div>' +
+      (GUEST_ENABLED ? '<div style="text-align:center"><button type="button" class="pts-link" data-guest="open">我是訪客（不用 PIN，不計點數）</button></div>' +
       '<div class="pts-guest" hidden><input class="pts-pin" style="font-size:18px;letter-spacing:0" maxlength="20" placeholder="輸入你的名字" autocomplete="off">' +
-      '<div class="row" style="margin-top:8px"><button type="button" class="pts-out" data-guest="go">以訪客身分進入</button></div></div></div>';
+      '<div class="row" style="margin-top:8px"><button type="button" class="pts-out" data-guest="go">以訪客身分進入</button></div></div>' : '') + '</div>';
     gateEl.addEventListener('click', function (e) {
-      var gb = e.target.closest && e.target.closest('[data-guest]');
+      var gb = GUEST_ENABLED && e.target.closest && e.target.closest('[data-guest]');
       if (gb) {
         var box = gateEl.querySelector('.pts-guest'), inp = box.querySelector('input');
         if (gb.dataset.guest === 'open') { box.hidden = false; inp.focus(); return; }
