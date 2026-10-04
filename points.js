@@ -25,9 +25,13 @@
   // ---------- 登入憑證：PIN 驗證通過後由後端發給，存在這台裝置（同一個網站的所有頁面共用） ----------
   function tokens() { try { return JSON.parse(get('quizPointsTokens') || '{}') || {}; } catch (e) { return {}; } }
   function tokenOf(n) { return tokens()[n] || ''; }
-  function setToken(n, t) { var o = tokens(); o[n] = t; set('quizPointsTokens', JSON.stringify(o)); }
+  function setToken(n, t) { var o = tokens(); o[n] = t; set('quizPointsTokens', JSON.stringify(o)); endGuest(); }
   function clearToken(n) { var o = tokens(); delete o[n]; set('quizPointsTokens', JSON.stringify(o)); }
   function anyToken() { return KNOWN.some(function (k) { return !!tokenOf(k); }); }
+  // ---------- 訪客：不用 PIN、不計點數（名字存在這台裝置；有人用 PIN 登入就自動結束訪客模式） ----------
+  function guestName() { return String(get('pointsGuest') || '').trim(); }
+  function endGuest() { if (!guestName()) return; set('pointsGuest', ''); if (/^訪客/.test(get('quizStudentName') || '')) set('quizStudentName', ''); }
+  function needGate() { return !anyToken() && !guestName(); }
 
   var API = window.Points = {};
   if (!url()) { API.enabled = false; API.earn = function () { return Promise.resolve(null); }; API.open = function () {}; API.mount = function () {}; return; }
@@ -75,7 +79,7 @@
     '.pts-pill:active{transform:scale(.97)}' +
     '.pts-pill b{font-variant-numeric:tabular-nums}' +
     '.pts-banner{width:100%;padding:14px 16px 12px;border:2px solid #f0b94a;border-radius:16px;background:linear-gradient(135deg,#fff6d8,#ffe7a8);color:#5b3a0c;text-align:left;font-family:system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif;box-shadow:0 2px 8px rgba(122,75,18,.15)}' +
-    '.pts-bn-head{font-size:17px;font-weight:800;margin-bottom:8px}' +
+    '.pts-bn-head{font-size:17px;font-weight:800;margin-bottom:8px;display:flow-root}' +
     '.pts-bn-head small{font-size:12.5px;font-weight:600;color:#8a6a35;margin-left:8px}' +
     '.pts-kids{display:grid;grid-template-columns:1fr 1fr;gap:10px}' +
     '.pts-kid{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border:2px solid #e6c978;border-radius:12px;background:#fffbea;color:#5b3a0c;font-family:inherit;cursor:pointer;text-align:left;min-width:0}' +
@@ -84,6 +88,7 @@
     '.pts-kid b{font-size:15px;overflow:hidden;text-overflow:ellipsis}' +
     '.pts-kid em{font-style:normal;font-size:26px;font-weight:800;line-height:1;color:#7a4b12;font-variant-numeric:tabular-nums;white-space:nowrap}' +
     '.pts-kid em small{font-size:12px;font-weight:700;margin-left:2px}' +
+    '@media (max-width:440px){.pts-kid{flex-direction:column;align-items:flex-start;gap:4px}.pts-kid b{font-size:14px}.pts-kid em{font-size:22px}}' +
     '.pts-bn-rule{font-size:12px;color:#6b5530;margin-top:8px}' +
     '.pts-toast{position:fixed;left:50%;bottom:calc(70px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9100;max-width:min(92vw,420px);padding:11px 16px;border-radius:14px;background:#2f2a22;color:#fff;font:600 15px/1.45 system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);text-align:center}' +
     '.pts-toast.good{background:#1f6b3a}' +
@@ -161,10 +166,11 @@
   function renderPill() {
     var cur = curName(), unlocked = !!(cur && tokenOf(cur)), adm = !!tokenOf(ADMIN);
     if (pill) pill.style.display = banners.length ? 'none' : '';   // 頁面上已有橫幅時，不再顯示右下角按鈕
-    if (pill) pill.innerHTML = (unlocked ? '🪙 <span>點數</span>' + (state.balance != null ? ' <b>' + state.balance + '</b>' : '') : adm ? '👤 <span>家長</span>' : '🔒 <span>我的點數</span>');
+    var gst = !anyToken() && guestName();
+    if (pill) pill.innerHTML = (unlocked ? '🪙 <span>點數</span>' + (state.balance != null ? ' <b>' + state.balance + '</b>' : '') : adm ? '👤 <span>家長</span>' : gst ? '👤 <span>訪客</span>' : '🔒 <span>我的點數</span>');
     banners.forEach(function (el) {
-      el.innerHTML = '<div class="pts-bn-head">🪙 點數存摺<small>' + (adm ? '家長模式：看得到孩子的點數' : '點自己的名字，看明細、兌換') + '</small>' +
-        (anyToken() ? '<button type="button" class="pts-out" data-logout="1">🔒 登出</button>' : '') + '</div><div class="pts-kids">' +
+      el.innerHTML = '<div class="pts-bn-head">🪙 點數存摺<small>' + (adm ? '家長模式：看得到孩子的點數' : gst ? '訪客：' + esc(gst) + '（不計點數）' : '點自己的名字，看明細、兌換') + '</small>' +
+        (anyToken() ? '<button type="button" class="pts-out" data-logout="1">🔒 登出</button>' : gst ? '<button type="button" class="pts-out" data-logout="1">離開訪客模式</button>' : '') + '</div><div class="pts-kids">' +
         KIDS.map(function (k) {
           var v = kidBal[k], isOpen = !!(tokenOf(k) || adm);
           return '<button type="button" class="pts-kid' + (cur === k && tokenOf(k) ? ' on' : '') + '" data-kid="' + k + '"><b>' + k + '</b><em>' +
@@ -187,7 +193,7 @@
     renderPill();
   }
   function logoutAll() {
-    KNOWN.forEach(clearToken); kidBal = {}; state.balance = null; state.ledger = []; state.force = '';
+    endGuest(); KNOWN.forEach(clearToken); kidBal = {}; state.balance = null; state.ledger = []; state.force = '';
     if (mask) mask.hidden = true;
     if (adminMask) adminMask.hidden = true;
     renderPill(); showGate();
@@ -211,7 +217,7 @@
       });
     });
     el.appendChild(b); banners.push(b); renderPill(); loadKids();
-    if (!anyToken()) showGate();
+    if (needGate()) showGate();
   };
 
   // ---------- 進入頁面的「你是誰？」關卡 ----------
@@ -222,8 +228,23 @@
     gateEl.innerHTML = '<div class="pts-card pts-gatecard"><div class="pts-head"><h2>👋 你是誰？</h2></div>' +
       '<div class="pts-empty" style="padding-top:0">選自己的名字，再輸入 PIN 才能進來。第一次來的人，要先設定自己的 PIN。</div>' +
       '<div class="pts-who">' + KIDS.map(function (k) { return '<button type="button" data-g="' + k + '">我是 ' + k + '</button>'; }).join('') + '</div>' +
-      '<div style="text-align:center"><button type="button" class="pts-link" data-g="' + ADMIN + '">我是家長（管理者）</button></div></div>';
+      '<div style="text-align:center"><button type="button" class="pts-link" data-g="' + ADMIN + '">我是家長（管理者）</button></div>' +
+      '<div style="text-align:center"><button type="button" class="pts-link" data-guest="open">我是訪客（不用 PIN，不計點數）</button></div>' +
+      '<div class="pts-guest" hidden><input class="pts-pin" style="font-size:18px;letter-spacing:0" maxlength="20" placeholder="輸入你的名字" autocomplete="off">' +
+      '<div class="row" style="margin-top:8px"><button type="button" class="pts-out" data-guest="go">以訪客身分進入</button></div></div></div>';
     gateEl.addEventListener('click', function (e) {
+      var gb = e.target.closest && e.target.closest('[data-guest]');
+      if (gb) {
+        var box = gateEl.querySelector('.pts-guest'), inp = box.querySelector('input');
+        if (gb.dataset.guest === 'open') { box.hidden = false; inp.focus(); return; }
+        var gname = inp.value.trim().replace(/[<>]/g, '');
+        if (!gname) { inp.focus(); return; }
+        set('pointsGuest', gname); set('quizStudentName', '訪客 ' + gname);
+        if (gateEl && gateEl.parentNode) gateEl.parentNode.removeChild(gateEl);
+        gateEl = null; renderPill();
+        try { window.dispatchEvent(new Event('points-login')); } catch (err) {}
+        return;
+      }
       var b = e.target.closest && e.target.closest('[data-g]'); if (!b) return;
       var n = b.dataset.g;
       ensureAuth(n).then(function (tok) {
@@ -233,7 +254,11 @@
         if (gateEl && gateEl.parentNode) gateEl.parentNode.removeChild(gateEl);
         gateEl = null;
         loadKids(); refresh();
+        try { window.dispatchEvent(new Event('points-login')); } catch (err) {}
       });
+    });
+    gateEl.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && e.target.closest && e.target.closest('.pts-guest')) { var go = gateEl.querySelector('[data-guest="go"]'); if (go) go.click(); }
     });
     document.body.appendChild(gateEl);
   }
@@ -263,7 +288,7 @@
     KIDS.forEach(function (k) {
       call({ action: 'balance', name: k, token: tokenOf(ADMIN) }).then(function (d) {
         if (d && d.ok) { adm.data[k] = d; kidBal[k] = d.balance; state.rules = d.rules || state.rules; }
-        else if (d && d.error === 'auth') { clearToken(ADMIN); adminMask.hidden = true; renderPill(); if (!anyToken()) showGate(); }
+        else if (d && d.error === 'auth') { clearToken(ADMIN); adminMask.hidden = true; renderPill(); if (needGate()) showGate(); }
       }).catch(function () { adm.msg = '連不上點數系統，請檢查網路。'; adm.bad = true; }).then(function () { renderAdmin(); renderPill(); });
     });
   }
@@ -531,7 +556,7 @@
       var n = b.dataset.n; set('quizStudentName', n); state.name = n; state.balance = null; state.ledger = [];
       ensureAuth(n).then(function (tok) { if (!tok) return; renderModal(); refresh(); });
     }
-    else if (a === 'logout') { var me = curName(); clearToken(me); if (KIDS.indexOf(me) >= 0) kidBal[me] = undefined; state.balance = null; state.ledger = []; close(); renderPill(); if (!anyToken()) showGate(); }
+    else if (a === 'logout') { var me = curName(); clearToken(me); if (KIDS.indexOf(me) >= 0) kidBal[me] = undefined; state.balance = null; state.ledger = []; close(); renderPill(); if (needGate()) showGate(); }
     else if (a === 'redeem') { state.confirm = b.dataset.k; state.msg = ''; state.rid = 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); renderModal(); }
     else if (a === 'no') { state.confirm = ''; renderModal(); }
     else if (a === 'yes') redeem();
@@ -598,7 +623,7 @@
     pill = document.createElement('button'); pill.type = 'button'; pill.className = 'pts-pill'; pill.setAttribute('aria-label', '開啟點數存摺');
     pill.addEventListener('click', open); document.body.appendChild(pill); renderPill();
     var n = curName(); if (n && tokenOf(n)) refresh();
-    if (!anyToken()) showGate();   // 這台裝置沒有人驗證過：每一頁都先擋住，請選名字、輸入 PIN
+    if (needGate()) showGate();   // 這台裝置沒有人驗證過：每一頁都先擋住，請選名字、輸入 PIN
   }
   if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);
 })();
