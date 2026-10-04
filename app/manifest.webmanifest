@@ -1,0 +1,17 @@
+{
+  "name": "B&M 學習 App",
+  "short_name": "B&M 學習",
+  "description": "BRANDEN & MELISSA 的英文學習入口：英文測驗系統、美式生活館，用 PIN 登入、累積學習點數。",
+  "id": "/app/",
+  "start_url": "/app/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1B3A2F",
+  "theme_color": "#1B3A2F",
+  "lang": "zh-Hant",
+  "icons": [
+    { "src": "/app/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/app/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
