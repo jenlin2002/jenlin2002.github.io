@@ -4,6 +4,8 @@
  *   1. 測驗做完呼叫 Points.earn({name,label,mode,correct,total}) → 後端記一筆賺點，畫面跳出「+N 點」。
  *   2. 右下角的「🪙 點數」按鈕 → 打開存摺：餘額、兌換、每一筆賺到與用掉的明細。
  *
+ * 其他人：家長在「家長管理 → 帳號管理」建立帳號並設定 PIN（學生＝有存摺；只能練習＝不計點數），
+ *       之後在關卡按「其他帳號登入」輸入帳號名稱與 PIN。沒有帳號不能進來。
  * 安全：BRANDEN／MELISSA 各自設定 4 位數 PIN；PIN 驗證通過後後端發登入憑證（存在這台裝置），
  *       看存摺、賺點、兌換都要憑證。網站首頁沒有驗證過的人會先看到「你是誰？」關卡。
  *
@@ -29,7 +31,11 @@
   function tokenOf(n) { return tokens()[n] || ''; }
   function setToken(n, t) { var o = tokens(); o[n] = t; set('quizPointsTokens', JSON.stringify(o)); endGuest(); }
   function clearToken(n) { var o = tokens(); delete o[n]; set('quizPointsTokens', JSON.stringify(o)); }
-  function anyToken() { return KNOWN.some(function (k) { return !!tokenOf(k); }); }
+  function anyToken() { var o = tokens(); return Object.keys(o).some(function (k) { return !!o[k]; }); }
+  // 家長建立的帳號（這台裝置上已登入的）：不是 BRANDEN／MELISSA／PARENT，但有憑證
+  function memberNames() { var o = tokens(); return Object.keys(o).filter(function (k) { return o[k] && KNOWN.indexOf(k) < 0; }); }
+  function shownKids() { return KIDS.concat(memberNames()); }
+  var kidPractice = {};   // 只能練習的帳號（不計點數）
   // ---------- 訪客：不用 PIN、不計點數（名字存在這台裝置；有人用 PIN 登入就自動結束訪客模式） ----------
   function clearGuest() { set('pointsGuest', ''); if (/^訪客/.test(get('quizStudentName') || '')) set('quizStudentName', ''); }
   function guestName() { return GUEST_ENABLED ? String(get('pointsGuest') || '').trim() : ''; }
@@ -175,21 +181,21 @@
     banners.forEach(function (el) {
       el.innerHTML = '<div class="pts-bn-head">🪙 點數存摺<small>' + (adm ? '家長模式：看得到孩子的點數' : gst ? '訪客：' + esc(gst) + '（不計點數）' : '點自己的名字，看明細、兌換') + '</small>' +
         (anyToken() ? '<button type="button" class="pts-out" data-logout="1">🔒 登出</button>' : gst ? '<button type="button" class="pts-out" data-logout="1">離開訪客模式</button>' : '') + '</div><div class="pts-kids">' +
-        KIDS.map(function (k) {
+        shownKids().map(function (k) {
           var v = kidBal[k], isOpen = !!(tokenOf(k) || adm);
-          return '<button type="button" class="pts-kid' + (cur === k && tokenOf(k) ? ' on' : '') + '" data-kid="' + k + '"><b>' + k + '</b><em>' +
-            (!isOpen ? '<small>🔒 輸入 PIN</small>' : v != null ? v + '<small>點</small>' : kidFail[k] ? '<small>讀不到</small>' : '<small>…</small>') + '</em></button>';
+          return '<button type="button" class="pts-kid' + (cur === k && tokenOf(k) ? ' on' : '') + '" data-kid="' + esc(k) + '"><b>' + esc(k) + '</b><em>' +
+            (!isOpen ? '<small>🔒 輸入 PIN</small>' : kidPractice[k] ? '<small>練習帳號</small>' : v != null ? v + '<small>點</small>' : kidFail[k] ? '<small>讀不到</small>' : '<small>…</small>') + '</em></button>';
         }).join('') + '</div>' +
         (adm ? '<div class="pts-adm"><button type="button" data-adm="panel">👤 家長管理</button><button type="button" data-adm="mine">🧪 我的測試存摺</button></div>' : '') +
         '<div class="pts-bn-rule">' + rulesLine() + '</div>';
     });
   }
   function loadKids() {
-    KIDS.forEach(function (k) {
+    shownKids().forEach(function (k) {
       var own = tokenOf(k), tok = own || tokenOf(ADMIN);   // 孩子自己的憑證，或家長的憑證（只能看）
       if (!tok) { kidBal[k] = undefined; return; }
       call({ action: 'balance', name: k, token: tok }).then(function (d) {
-        if (d && d.ok) { kidBal[k] = d.balance; kidFail[k] = false; state.rules = d.rules || state.rules; }
+        if (d && d.ok) { kidBal[k] = d.balance; kidPractice[k] = !!d.practice; kidFail[k] = false; state.rules = d.rules || state.rules; }
         else if (d && d.error === 'auth') { clearToken(own ? k : ADMIN); kidBal[k] = undefined; }
         else kidFail[k] = true;
       }).catch(function () { kidFail[k] = true; }).then(renderPill);
@@ -232,6 +238,9 @@
     gateEl.innerHTML = '<div class="pts-card pts-gatecard"><div class="pts-head"><h2>👋 你是誰？</h2></div>' +
       '<div class="pts-empty" style="padding-top:0">選自己的名字，再輸入 PIN 才能進來。第一次來的人，要先設定自己的 PIN。</div>' +
       '<div class="pts-who">' + KIDS.map(function (k) { return '<button type="button" data-g="' + k + '">我是 ' + k + '</button>'; }).join('') + '</div>' +
+      '<div style="text-align:center"><button type="button" class="pts-link" data-other="open">其他帳號登入（家長建立的帳號）</button></div>' +
+      '<div class="pts-other" hidden><input class="pts-pin" style="font-size:18px;letter-spacing:0" maxlength="20" placeholder="輸入你的帳號名稱" autocomplete="off" autocapitalize="characters">' +
+      '<div class="row" style="margin-top:8px"><button type="button" class="pts-out" data-other="go">下一步：輸入 PIN</button></div></div>' +
       '<div style="text-align:center"><button type="button" class="pts-link" data-g="' + ADMIN + '">我是家長（管理者）</button></div>' +
       (GUEST_ENABLED ? '<div style="text-align:center"><button type="button" class="pts-link" data-guest="open">我是訪客（不用 PIN，不計點數）</button></div>' +
       '<div class="pts-guest" hidden><input class="pts-pin" style="font-size:18px;letter-spacing:0" maxlength="20" placeholder="輸入你的名字" autocomplete="off">' +
@@ -249,6 +258,23 @@
         try { window.dispatchEvent(new Event('points-login')); } catch (err) {}
         return;
       }
+      var ob = e.target.closest && e.target.closest('[data-other]');
+      if (ob) {
+        var obox = gateEl.querySelector('.pts-other'), oinp = obox.querySelector('input');
+        if (ob.dataset.other === 'open') { obox.hidden = false; oinp.focus(); return; }
+        var on = oinp.value.trim().toUpperCase();
+        if (!on) { oinp.focus(); return; }
+        if (on === ADMIN || KIDS.indexOf(on) >= 0) { oinp.value = ''; oinp.placeholder = '請用上面的按鈕登入'; return; }
+        ensureAuth(on).then(function (tok) {
+          if (!tok) return;
+          set('quizStudentName', on); state.name = on; state.balance = null; state.ledger = []; state.force = '';
+          if (gateEl && gateEl.parentNode) gateEl.parentNode.removeChild(gateEl);
+          gateEl = null;
+          loadKids(); refresh();
+          try { window.dispatchEvent(new Event('points-login')); } catch (err) {}
+        });
+        return;
+      }
       var b = e.target.closest && e.target.closest('[data-g]'); if (!b) return;
       var n = b.dataset.g;
       ensureAuth(n).then(function (tok) {
@@ -263,12 +289,13 @@
     });
     gateEl.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' && e.target.closest && e.target.closest('.pts-guest')) { var go = gateEl.querySelector('[data-guest="go"]'); if (go) go.click(); }
+      if (e.key === 'Enter' && e.target.closest && e.target.closest('.pts-other')) { var og = gateEl.querySelector('[data-other="go"]'); if (og) og.click(); }
     });
     document.body.appendChild(gateEl);
   }
 
   // ---------- 家長管理：看孩子的點數、替孩子重設 PIN、進自己的測試存摺 ----------
-  var adminMask, adm = { data: {}, msg: '', bad: false, confirm: '', busy: false };
+  var adminMask, adm = { data: {}, msg: '', bad: false, confirm: '', busy: false, members: null, mErr: '', pinFor: '', delFor: '' };
   function openMine() { state.force = ADMIN; open(); }
   function openAdmin() {
     if (!tokenOf(ADMIN)) return;
@@ -283,12 +310,59 @@
         else if (a === 'ask') { adm.confirm = b.dataset.k; adm.msg = ''; renderAdmin(); }
         else if (a === 'no') { adm.confirm = ''; renderAdmin(); }
         else if (a === 'reset') resetKid(b.dataset.k);
+        else if (a === 'madd') addMember();
+        else if (a === 'mpin') { adm.pinFor = b.dataset.k; adm.delFor = ''; renderAdmin(); }
+        else if (a === 'mpinsave') setMemberPin(b.dataset.k);
+        else if (a === 'mkind') memberCall({ action: 'setmemberkind', target: b.dataset.k, kind: b.dataset.v }, b.dataset.k + ' 已改成「' + (b.dataset.v === 'student' ? '學生' : '只能練習') + '」。');
+        else if (a === 'mdel') { adm.delFor = b.dataset.k; adm.pinFor = ''; renderAdmin(); }
+        else if (a === 'mdelyes') memberCall({ action: 'removemember', target: b.dataset.k }, '已刪除帳號 ' + b.dataset.k + '（存摺紀錄仍保留在試算表）。');
+        else if (a === 'mcancel') { adm.pinFor = ''; adm.delFor = ''; renderAdmin(); }
       });
       document.body.appendChild(adminMask);
     }
-    adm.msg = ''; adm.confirm = ''; adminMask.hidden = false; renderAdmin(); loadAdmin();
+    adm.msg = ''; adm.confirm = ''; adm.pinFor = ''; adm.delFor = ''; adminMask.hidden = false; renderAdmin(); loadAdmin();
+  }
+  function loadMembers() {
+    return call({ action: 'members', token: tokenOf(ADMIN) }).then(function (d) {
+      if (d && d.ok) { adm.members = d.members || []; adm.mErr = '';
+        adm.members.forEach(function (m) {
+          if (m.kind !== 'student') return;
+          call({ action: 'balance', name: m.name, token: tokenOf(ADMIN) }).then(function (b) { if (b && b.ok) { adm.data[m.name] = b; renderAdmin(); } }).catch(function () {});
+        });
+      }
+      else adm.mErr = d && d.error === 'unknown-action' ? '點數系統後端還沒更新到有「帳號管理」的版本，請先照說明更新 Apps Script。' : '讀不到帳號名單，請晚點再試。';
+    }).catch(function () { adm.mErr = '連不上點數系統，請檢查網路。'; }).then(renderAdmin);
+  }
+  function memberErr(d) {
+    var e = d && d.error;
+    return e === 'exists' ? '這個名字已經有人用了。' : e === 'bad-name' ? '帳號名稱只能用 1–20 個英文、數字或中文。' : e === 'bad-format' ? 'PIN 要剛好 4 個數字。' :
+      e === 'not-found' ? '找不到這個帳號。' : e === 'unknown-action' ? '點數系統後端還沒更新到有「帳號管理」的版本。' : '沒有成功，請再試一次。';
+  }
+  function memberCall(params, okMsg) {
+    if (adm.busy) return; adm.busy = true; renderAdmin();
+    return call(Object.assign({ token: tokenOf(ADMIN) }, params)).then(function (d) {
+      adm.busy = false;
+      if (d && d.ok) { adm.bad = false; adm.msg = okMsg; adm.pinFor = ''; adm.delFor = ''; return loadMembers().then(function () { return true; }); }
+      adm.bad = true; adm.msg = memberErr(d); renderAdmin(); return false;
+    }).catch(function () { adm.busy = false; adm.bad = true; adm.msg = '連不上點數系統，請檢查網路。'; renderAdmin(); return false; });
+  }
+  function addMember() {
+    var card = adminMask.querySelector('.pts-card');
+    var name = (card.querySelector('#ptsMName') || {}).value || '', kind = (card.querySelector('#ptsMKind') || {}).value || 'student', pin = (card.querySelector('#ptsMPin') || {}).value || '';
+    name = name.trim().toUpperCase();
+    if (!name) { adm.bad = true; adm.msg = '請輸入帳號名稱。'; renderAdmin(); return; }
+    if (!/^\d{4}$/.test(pin)) { adm.bad = true; adm.msg = 'PIN 要剛好 4 個數字。'; renderAdmin(); return; }
+    memberCall({ action: 'addmember', newname: name, kind: kind, pin: pin }, '已建立帳號 ' + name + '。請把帳號名稱和 PIN 告訴他：在「你是誰？」按「其他帳號登入」。').then(function (ok) {
+      if (ok) ['ptsMName', 'ptsMPin'].forEach(function (id) { var el = adminMask.querySelector('#' + id); if (el) el.value = ''; });
+    });
+  }
+  function setMemberPin(k) {
+    var pin = (adminMask.querySelector('#ptsMPin2') || {}).value || '';
+    if (!/^\d{4}$/.test(pin)) { adm.bad = true; adm.msg = 'PIN 要剛好 4 個數字。'; renderAdmin(); return; }
+    memberCall({ action: 'setmemberpin', target: k, pin: pin }, '已更新 ' + k + ' 的 PIN。他之前登入的裝置要用新 PIN 重新登入。');
   }
   function loadAdmin() {
+    loadMembers();
     KIDS.forEach(function (k) {
       call({ action: 'balance', name: k, token: tokenOf(ADMIN) }).then(function (d) {
         if (d && d.ok) { adm.data[k] = d; kidBal[k] = d.balance; state.rules = d.rules || state.rules; }
@@ -312,8 +386,35 @@
       else h += '<button class="pts-out" data-ad="ask" data-k="' + k + '" style="margin-top:8px">重設 ' + k + ' 的 PIN</button>';
       h += '</div>';
     });
+    // ---- 帳號管理：家長建立的其他帳號 ----
+    h += '<div class="pts-h3">帳號管理（其他人）</div>';
+    h += '<div class="pts-rule" style="margin-bottom:8px">其他人要使用學習網站，要先在這裡建立帳號、設定 PIN，再把帳號名稱和 PIN 告訴他。他在「你是誰？」按「其他帳號登入」。<br>學生：有存摺，可以賺點數與兌換。只能練習：可以使用網站，但不計點數。</div>';
+    if (adm.mErr) h += '<div class="pts-msg bad">' + esc(adm.mErr) + '</div>';
+    else if (!adm.members) h += '<div class="pts-rule">讀取中…</div>';
+    else if (!adm.members.length) h += '<div class="pts-rule" style="margin-bottom:8px">還沒有其他帳號。</div>';
+    else adm.members.forEach(function (m) {
+      var k = m.name, kk = esc(k), d = adm.data[k], stu = m.kind === 'student';
+      h += '<div class="pts-kidbox"><div class="pts-kb-h"><b>' + kk + ' <small style="font-weight:600;color:#8a6a35">' + (stu ? '學生' : '只能練習') + (m.hasPin ? '' : '・PIN 未設定') + '</small></b><span>' + (stu ? (d ? d.balance + ' 點' : '…') : '') + '</span></div>';
+      if (adm.pinFor === k) h += '<div class="pts-ask"><b>替 ' + kk + ' 設定新的 PIN</b>' + '<input class="pts-pin" id="ptsMPin2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="••••" style="margin-top:6px">' +
+        '<div class="row"><button class="no" data-ad="mcancel">取消</button><button class="ok" data-ad="mpinsave" data-k="' + kk + '"' + (adm.busy ? ' disabled' : '') + '>' + (adm.busy ? '處理中…' : '儲存 PIN') + '</button></div></div>';
+      else if (adm.delFor === k) h += '<div class="pts-ask"><b>確定刪除帳號 ' + kk + ' 嗎？</b><div>刪除後他就不能登入；以前的存摺紀錄會留在試算表。</div>' +
+        '<div class="row"><button class="no" data-ad="mcancel">先不要</button><button class="ok" data-ad="mdelyes" data-k="' + kk + '"' + (adm.busy ? ' disabled' : '') + '>' + (adm.busy ? '處理中…' : '確定刪除') + '</button></div></div>';
+      else h += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"><button class="pts-out" data-ad="mpin" data-k="' + kk + '">設定 PIN</button>' +
+        '<button class="pts-out" data-ad="mkind" data-k="' + kk + '" data-v="' + (stu ? 'practice' : 'student') + '">改成' + (stu ? '只能練習' : '學生') + '</button>' +
+        '<button class="pts-out" data-ad="mdel" data-k="' + kk + '">刪除帳號</button></div>';
+      h += '</div>';
+    });
+    if (!adm.mErr && adm.members) h += '<div class="pts-kidbox"><b>＋ 建立新帳號</b>' +
+      '<label class="pts-lbl" for="ptsMName">帳號名稱（英文、數字或中文，最多 20 個字）</label><input class="pts-pin" id="ptsMName" maxlength="20" autocomplete="off" autocapitalize="characters" style="font-size:18px;letter-spacing:0" placeholder="例如 AMY">' +
+      '<label class="pts-lbl" for="ptsMKind">帳號類型</label><select class="pts-pin" id="ptsMKind" style="font-size:16px;letter-spacing:0"><option value="student">學生：可以賺點數、兌換</option><option value="practice">只能練習：不計點數</option></select>' +
+      '<label class="pts-lbl" for="ptsMPin">PIN（4 位數字，由你設定後告訴他）</label><input class="pts-pin" id="ptsMPin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="••••">' +
+      '<button type="button" class="pts-gobtn" data-ad="madd" style="margin-top:10px"' + (adm.busy ? ' disabled' : '') + '>' + (adm.busy ? '處理中…' : '建立帳號') + '</button></div>';
     h += '<button type="button" class="pts-gobtn" data-ad="mine">🧪 進入我的測試存摺</button>';
-    adminMask.querySelector('.pts-card').innerHTML = h;
+    // 重畫時保留正在輸入的內容
+    var card = adminMask.querySelector('.pts-card'), keep = {};
+    ['ptsMName', 'ptsMKind', 'ptsMPin', 'ptsMPin2'].forEach(function (id) { var el = card.querySelector('#' + id); if (el) keep[id] = el.value; });
+    card.innerHTML = h;
+    Object.keys(keep).forEach(function (id) { var el = card.querySelector('#' + id); if (el) el.value = keep[id]; });
   }
   function resetKid(k) {
     if (adm.busy) return; adm.busy = true; renderAdmin();
@@ -348,6 +449,7 @@
         if (why) h += '<div class="pts-msg">' + esc(why) + '</div>';
         if (st.step === 'load') h += '<div class="pts-empty">讀取中…</div>';
         else if (st.step === 'err') h += '<div class="pts-msg bad">' + esc(st.msg) + '</div><div class="pts-ask"><div class="row"><button class="no" data-p="x">關閉</button><button class="ok" data-p="retry">再試一次</button></div></div>';
+        else if (st.step === 'askparent') h += '<div class="pts-empty" style="padding:0 0 8px;text-align:left">這個帳號的 PIN 還沒設定好，請家長在「👤 家長管理 → 帳號管理」幫你設定 PIN。</div><div class="pts-ask"><div class="row"><button class="ok" data-p="x">知道了</button></div></div>';
         else if (st.step === 'adminset') h += '<div class="pts-empty" style="padding:0 0 8px;text-align:left">家長（管理者）的 PIN 還沒設定。<br>管理者的 PIN 要在 Apps Script 裡設定（不能在網頁上設，才不會被別人搶先）：打開「學習點數存摺」試算表 → 擴充功能 → Apps Script → 把 <b>setParentPin</b> 函式裡 <b>var PIN</b> 那一行改成 4 位數字 → 執行。</div><div class="pts-ask"><div class="row"><button class="ok" data-p="x">知道了</button></div></div>';
         else {
           if (st.step === 'set') h += '<div class="pts-empty" style="padding:0 0 8px;text-align:left">第一次使用，請設定 <b>' + st.len + ' 位數 PIN</b>（只能用數字）。<br>要記住喔，也不要告訴別人。沒有 PIN 就不能看存摺、賺點和兌換。</div>' + field('pin1', '設定 PIN') + field('pin2', '再輸入一次');
@@ -361,8 +463,8 @@
       function load() {
         st.step = 'load'; st.msg = ''; draw();
         call({ action: 'status', name: name }).then(function (d) {
-          if (d && d.ok) { st.len = d.pinLength || 4; st.step = d.hasPin ? 'in' : d.admin ? 'adminset' : 'set'; state.rules = d.rules || state.rules; }
-          else { st.step = 'err'; st.msg = d && d.error === 'not-allowed' ? '這個名字沒有點數存摺。' : '點數系統暫時連不上，請晚點再試。'; }
+          if (d && d.ok) { st.len = d.pinLength || 4; st.step = d.hasPin ? 'in' : d.admin ? 'adminset' : d.member ? 'askparent' : 'set'; state.rules = d.rules || state.rules; }
+          else { st.step = 'err'; st.msg = d && d.error === 'not-allowed' ? (KIDS.indexOf(name) >= 0 ? '這個名字沒有點數存摺。' : '找不到「' + name + '」這個帳號。請家長先在「👤 家長管理 → 帳號管理」建立帳號。') : '點數系統暫時連不上，請晚點再試。'; }
           draw();
         }).catch(function () { st.step = 'err'; st.msg = '連不上點數系統，請檢查網路。'; draw(); });
       }
@@ -381,6 +483,8 @@
           else if (e === 'locked') { st.locked = true; st.msg = '輸錯太多次了，請等 ' + d.minutes + ' 分鐘再試。'; }
           else if (e === 'pin-exists') { st.step = 'in'; st.msg = '這個名字已經設過 PIN 了，請輸入 PIN。'; }
           else if (e === 'no-pin' || e === 'admin-editor') { st.step = name === ADMIN ? 'adminset' : 'set'; st.msg = ''; }
+          else if (e === 'ask-parent') { st.step = 'askparent'; st.msg = ''; }
+          else if (e === 'not-allowed') st.msg = '找不到這個帳號，請家長先建立。';
           else if (e === 'bad-format') st.msg = 'PIN 要剛好 ' + st.len + ' 個數字。';
           else st.msg = '沒有成功，請再試一次。';
           draw();
@@ -483,6 +587,10 @@
       h += '<div class="pts-empty">先選你是誰，才看得到自己的點數。</div>' + rulesHtml();
     } else {
       if (state.msg) h += '<div class="pts-msg' + (state.msgBad ? ' bad' : '') + '">' + esc(state.msg) + '</div>';
+      if (state.practice && tokenOf(name)) {
+        h += '<div class="pts-empty" style="text-align:left">🎯 這是<b>練習帳號</b>：可以使用所有學習網站，但不計點數、不能兌換。<br>想要賺點數，請家長在「帳號管理」把你改成學生帳號。</div>';
+        mask.querySelector('.pts-card').innerHTML = h; return;
+      }
       var packs = packInfo(), tp = packs[0][2].points, tm = packs[0][2].minutes || 15;
       var limit = (state.rules && state.rules.dailyTimeLimit) || 0, usedNow = state.timeUsed || 0;
       var times = bal == null ? 0 : Math.floor(bal / tp);
@@ -516,17 +624,17 @@
 
   function refresh() {
     var name = curName();
-    if (!name || KNOWN.indexOf(name) < 0 || !tokenOf(name)) { state.balance = null; state.ledger = []; renderPill(); renderModal(); return Promise.resolve(); }
+    if (!name || !tokenOf(name)) { state.balance = null; state.ledger = []; renderPill(); renderModal(); return Promise.resolve(); }
     state.name = name;
     state.failed = false;
     return call({ action: 'balance', name: name }).then(function (d) {
       if (d && d.error === 'auth') {   // 憑證失效（例如 PIN 被重設）：清掉，請他重新輸入
-        clearToken(name); state.balance = null; state.ledger = []; if (KIDS.indexOf(name) >= 0) kidBal[name] = undefined;
+        clearToken(name); state.balance = null; state.ledger = []; if (name !== ADMIN) kidBal[name] = undefined;
         renderPill(); renderModal();
         return ensureAuth(name, '請重新輸入 PIN').then(function (t) { if (t) return refresh(); close(); });
       }
       if (!d || !d.ok) state.failed = true;
-      if (d && d.ok && curName() === name) { state.balance = d.balance; state.ledger = d.ledger || []; state.rules = d.rules || state.rules; state.timeUsed = d.timeUsedToday || 0; if (KIDS.indexOf(name) >= 0) kidBal[name] = d.balance; }
+      if (d && d.ok && curName() === name) { state.practice = !!d.practice; kidPractice[name] = !!d.practice; state.balance = d.balance; state.ledger = d.ledger || []; state.rules = d.rules || state.rules; state.timeUsed = d.timeUsedToday || 0; if (name !== ADMIN) kidBal[name] = d.balance; }
       else if (d && !d.ok) { state.msg = '讀不到存摺，請晚點再試。'; state.msgBad = true; }
     }).catch(function () { state.failed = true; state.msg = '連不上點數系統，請檢查網路。'; state.msgBad = true; })
       .then(function () { renderPill(); renderModal(); });
@@ -560,7 +668,7 @@
       var n = b.dataset.n; set('quizStudentName', n); state.name = n; state.balance = null; state.ledger = [];
       ensureAuth(n).then(function (tok) { if (!tok) return; renderModal(); refresh(); });
     }
-    else if (a === 'logout') { var me = curName(); clearToken(me); if (KIDS.indexOf(me) >= 0) kidBal[me] = undefined; state.balance = null; state.ledger = []; close(); renderPill(); if (needGate()) showGate(); }
+    else if (a === 'logout') { var me = curName(); clearToken(me); if (me !== ADMIN) kidBal[me] = undefined; state.balance = null; state.ledger = []; close(); renderPill(); if (needGate()) showGate(); }
     else if (a === 'redeem') { state.confirm = b.dataset.k; state.msg = ''; state.rid = 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); renderModal(); }
     else if (a === 'no') { state.confirm = ''; renderModal(); }
     else if (a === 'yes') redeem();
@@ -602,7 +710,8 @@
         });
       }
       if (!d || !d.ok) { toast('🪙 點數這次沒記到，稍後重做一次就會補上。'); return d; }
-      state.balance = d.balance; if (KIDS.indexOf(name) >= 0) kidBal[name] = d.balance; renderPill();
+      if (d.reason === 'practice') { kidPractice[name] = true; renderPill(); toast('🎯 做得好！（練習帳號不計點數）', true); return d; }
+      state.balance = d.balance; if (name !== ADMIN) kidBal[name] = d.balance; renderPill();
       celebrate(name, d, o);
       if (mask && !mask.hidden) refresh();
       return d;
@@ -611,7 +720,7 @@
   API.earn = function (o) {
     o = o || {};
     var name = String(o.name || curName() || '').trim().toUpperCase();
-    if (!name || !(o.total > 0) || KNOWN.indexOf(name) < 0) return Promise.resolve(null);   // 只有 BRANDEN、MELISSA、家長有存摺
+    if (!name || !(o.total > 0) || (KNOWN.indexOf(name) < 0 && !tokenOf(name))) return Promise.resolve(null);   // BRANDEN、MELISSA、家長，以及已登入的家長建立帳號
     if (KIDS.indexOf(name) >= 0 && !tokenOf(name) && tokenOf(ADMIN)) { name = ADMIN; o = Object.assign({}, o, { test: true }); }   // 家長在測試：點數記在家長的測試存摺，不動孩子的
     if (name !== ADMIN) state.name = name;
     return ensureAuth(name, '輸入 PIN，才能記下這次的點數').then(function (tok) {
