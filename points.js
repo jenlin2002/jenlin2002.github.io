@@ -203,7 +203,7 @@
     renderPill();
   }
   function logoutAll() {
-    endGuest(); KNOWN.forEach(clearToken); kidBal = {}; state.balance = null; state.ledger = []; state.force = '';
+    endGuest(); Object.keys(tokens()).forEach(clearToken); kidBal = {}; state.balance = null; state.ledger = []; state.force = '';   // 家長建立的帳號也要一起登出
     if (mask) mask.hidden = true;
     if (adminMask) adminMask.hidden = true;
     renderPill(); showGate();
