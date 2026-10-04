@@ -10,3 +10,13 @@
   - 圖示 `app/icon-192.png`、`icon-512.png`、`apple-touch-icon.png`。
   - iPhone 加到主畫面後，App 和 Safari 的登入資料是分開的，第一次在 App 裡要重新登入。
 - 英文測驗系統裡不要放美式生活館的連結（使用者要求）。
+
+## 2026-10-04 手機雲端版的工作紀錄
+
+- 已合併：網站首頁 PR #1（B&M 學習 App、訪客模式）、english-quiz PR #6、daily_life_listening PR #3（訪客模式＋手機版點數橫幅修正）。
+- **還沒驗證**（雲端環境連不到網站與點數後端）：
+  1. 真的手機上「加入主畫面」安裝 App、從 App 打開兩個網站。
+  2. 在 App 裡用真的 PIN 登入 BRANDEN／MELISSA、做測驗加點（後端 Apps Script 沒有被改，應該照常運作）。
+- **回家電腦第一件事**：把這裡（或任一 repo）的 `points.js` 複製回私人 repo english-quiz-plan 的 `points/points.js`，
+  三份公開副本與主檔要一樣，否則下次從 plan repo 部署會把訪客模式蓋掉。
+- 使用者的分工習慣：手機上用 Claude Code 雲端版做，回家用電腦接手；每次結束前要更新各 repo 的 CLAUDE.md 並合併到 main。
