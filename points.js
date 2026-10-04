@@ -607,7 +607,7 @@
         var need = x[2].points, mins = x[2].minutes || 0;
         var full = !!(mins && lim && used + mins > lim), can = bal != null && bal >= need && !full;
         var note = mins && lim ? '・今天已換 ' + used + ' / ' + lim + ' 分鐘' : '';
-        var label = bal == null ? '…' : full ? '今天額度用完' : can ? '兌換' : '還差 ' + (need - bal) + ' 點';
+        var label = bal == null ? '…' : full ? '今天額度用完' : can ? '兌換' : '兌換（還差 ' + (need - bal) + ' 點）';
         return '<div class="pts-pack"><div><div class="t">' + x[1] + ' ' + esc(x[2].label) + '</div><div class="c">需要 ' + need + ' 點' + note + '</div></div>' +
           '<button data-a="redeem" data-k="' + x[0] + '"' + (can && !state.busy ? '' : ' disabled') + '>' + label + '</button></div>';
       }).join('') + '</div>';
