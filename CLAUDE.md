@@ -22,3 +22,5 @@
 - 使用者的分工習慣：手機上用 Claude Code 雲端版做，回家用電腦接手；每次結束前要更新各 repo 的 CLAUDE.md 並合併到 main。
 
 - **其他人＝家長開帳號（2026-10-04）**：除了 BRANDEN、MELISSA、家長，其他人要由家長在「家長管理 → 帳號管理」建立帳號（學生＝有存摺可賺點；只能練習＝不計點數），PIN 由家長設定；本人在關卡按「其他帳號登入」。訪客模式關閉（`GUEST_ENABLED = false`）。**要先更新 Apps Script 後端（貼新版 Code.gs → 部署新版本）才能用**，步驟在 plan repo `points/README-點數存摺.md` 最後一節。points.js 主檔與三個網站的副本已同步一致。
+
+- **`/stock/` 短網址（2026-10-12）**：`jenlin2002.github.io/stock` 會自動轉到台美股看盤 `https://stock-dashboard-2fv.pages.dev/`（stock-dashboard 私人 repo，Cloudflare Access 保護，仍要登入）。只是轉址頁，不放任何股票資料；網址換了改 `stock/index.html` 兩處。
