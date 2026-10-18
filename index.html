@@ -35,24 +35,20 @@
   }
   h1{ font-family:'Kalam', cursive; font-size:34px; margin-bottom:8px; }
   .sub{ font-size:14px; color:#9AA89C; }
-  /* 右上角：點數存摺（points.js compact，點開是下拉面板）＋ B&M 學習 App（安裝到手機主畫面） */
-  .top-right{ position:absolute; top:14px; right:16px; z-index:50; display:flex; align-items:center; gap:10px; }
+  /* 右上角工具列（一般網站的登入區）：🪙 點數（points.js compact：點開是下拉面板）＋登出＋📱 App */
+  .top-right{ position:absolute; top:14px; right:16px; z-index:50; display:flex; align-items:center; gap:8px; }
+  .top-right .pts-banner:not(.compact){ display:none; }   /* 瀏覽器還在用舊版 points.js 時，不要把大橫幅塞進右上角 */
   .app-btn{
-    display:flex; align-items:center; gap:8px;
-    padding:6px 12px 6px 6px; border:1px solid #2A4A3C; border-radius:12px; background:#163026;
-    color:#F7F3E8; text-decoration:none; text-align:left; line-height:1.25;
+    display:flex; align-items:center; gap:6px; height:32px; padding:0 12px 0 5px;
+    border:1px solid rgba(255,255,255,.28); border-radius:999px; background:transparent;
+    color:#F7F3E8; text-decoration:none; font-size:13px; font-weight:600; white-space:nowrap; opacity:.9;
   }
-  .app-btn:hover{ border-color:var(--yellow); }
-  .app-btn img{ width:32px; height:32px; border-radius:8px; }
-  .app-btn b{ font-size:14px; }
-  .app-btn small{ display:block; font-size:11px; color:#9AA89C; }
+  .app-btn:hover{ opacity:1; border-color:var(--yellow); }
+  .app-btn img{ width:22px; height:22px; border-radius:6px; }
   @media (max-width:640px){
-    header{ padding-top:64px; }
+    header{ padding-top:58px; }
     .top-right{ top:10px; right:10px; gap:6px; }
-    .app-btn{ padding:4px 8px 4px 4px; }
-    .app-btn b{ font-size:12px; }
-    .app-btn img{ width:26px; height:26px; }
-    .app-btn small{ display:none; }
+    .app-btn{ padding:0 9px 0 4px; font-size:12px; }
   }
   main{ max-width:1280px; margin:0 auto; padding:40px 20px 80px; }
   .section-title{
@@ -97,7 +93,7 @@
 <body>
 <header>
   <div class="top-right"><div id="ptsHome"></div>
-  <a class="app-btn" href="/app/" title="英文測驗系統＋美式生活館，一個入口；可以加到手機主畫面"><img src="/app/icon-192.png" alt=""><span><b>📱 安裝 B&amp;M 學習 App</b><small>加到手機主畫面</small></span></a></div>
+  <a class="app-btn" href="/app/" title="安裝 B&amp;M 學習 App：英文測驗系統＋美式生活館一個入口，可以加到手機主畫面"><img src="/app/icon-192.png" alt="">安裝 App</a></div>
   <div class="eyebrow">GROWING UP WITH ENGLISH</div>
   <h1>BRANDEN &amp; MELISSA 成長學習館</h1>
   <div class="sub">所有自製英文學習網站的入口，點卡片進入各個子網站</div>
@@ -147,7 +143,7 @@
   </div>
 </main>
 <footer>持續建置中，之後每完成一個新網站就會加進對應的分類裡。</footer>
-<script src="points.js"></script>
+<script src="points.js?v=20261018b"></script><!-- 改 points.js 時把 v 加一，免得瀏覽器用快取的舊版 -->
 <script>if (window.Points) Points.mount(document.getElementById('ptsHome'), { compact: true });</script>
 </body>
 </html>

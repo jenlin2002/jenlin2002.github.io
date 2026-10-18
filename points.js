@@ -107,11 +107,15 @@
     '.pts-kid .goal{font-size:12px;font-weight:600;color:#8a6a35;line-height:1.35}.pts-kid .goal b{font-size:12px;color:#b5561c}' +
     // compact：頁首右上角一顆按鈕，點開是下拉面板（網站首頁、App 首頁）
     '.pts-banner.compact{position:relative;width:auto;padding:0;border:0;background:none;box-shadow:none}' +
-    '.pts-chip{display:flex;align-items:center;gap:8px;padding:7px 12px;border:2px solid #f0b94a;border-radius:12px;background:linear-gradient(135deg,#fff6d8,#ffe7a8);color:#5b3a0c;font:700 14px/1.2 system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif;cursor:pointer;white-space:nowrap}' +
-    '.pts-chip b{font-size:17px;font-variant-numeric:tabular-nums;color:#7a4b12}.pts-chip .sep{color:#d0a85a}.pts-chip .car{font-size:11px;color:#8a6a35}' +
+    '.pts-cbar{display:flex;align-items:center;gap:6px}' +
+    '.pts-chip{display:flex;align-items:center;gap:6px;height:32px;padding:0 10px;border:1.5px solid #f0b94a;border-radius:999px;background:#fff3cf;color:#5b3a0c;font:700 13px/1 system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif;cursor:pointer;white-space:nowrap}' +
+    '.pts-chip:hover{background:#ffe9a8}' +
+    '.pts-chip b{font-size:15px;font-variant-numeric:tabular-nums;color:#7a4b12}.pts-chip .nm{font-weight:600;color:#7a5a2a}.pts-chip .sep{color:#d0a85a}.pts-chip .car{font-size:10px;color:#8a6a35}' +
+    '.pts-cout{height:32px;padding:0 12px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.06);color:#f3ead2;font:600 13px/1 system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif;cursor:pointer;white-space:nowrap;opacity:.85}' +
+    '.pts-cout:hover{opacity:1;border-color:rgba(255,255,255,.6)}' +
     '.pts-dd{position:absolute;right:0;top:calc(100% + 8px);z-index:8000;width:min(380px,calc(100vw - 20px));padding:14px 16px 12px;border:2px solid #f0b94a;border-radius:16px;background:linear-gradient(135deg,#fff6d8,#ffe7a8);color:#5b3a0c;box-shadow:0 12px 32px rgba(0,0,0,.35)}' +
     '.pts-dd .pts-kids{grid-template-columns:1fr}' +
-    '@media (max-width:640px){.pts-chip{padding:6px 9px;font-size:12px}.pts-chip b{font-size:15px}.pts-chip .nm{display:none}.pts-dd{position:fixed;left:10px;right:10px;top:56px;width:auto;max-height:calc(100vh - 70px);overflow:auto}}' +
+    '@media (max-width:640px){.pts-chip{padding:0 9px;font-size:12px}.pts-chip b{font-size:14px}.pts-chip .nm{display:none}.pts-cout{padding:0 9px;font-size:12px}.pts-dd{position:fixed;left:10px;right:10px;top:56px;width:auto;max-height:calc(100vh - 70px);overflow:auto}}' +
     '.pts-toast{position:fixed;left:50%;bottom:calc(70px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9100;max-width:min(92vw,420px);padding:11px 16px;border-radius:14px;background:#2f2a22;color:#fff;font:600 15px/1.45 system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);text-align:center}' +
     '.pts-toast.good{background:#1f6b3a}' +
     '.pts-mask[hidden],.pts-toast[hidden],.pts-cele[hidden]{display:none!important}' +
@@ -209,7 +213,9 @@
         var open = shownKids().filter(function (k) { return (tokenOf(k) || adm) && !kidPractice[k]; });
         var sum = open.length ? open.map(function (k) { return '<span class="nm">' + esc(k) + '</span> <b>' + (kidBal[k] != null ? kidBal[k] : '…') + '</b>'; }).join('<span class="sep">｜</span>') + ' 點'
           : (adm ? '家長' : '登入看點數');
-        el.innerHTML = '<button type="button" class="pts-chip" data-chip="1" aria-expanded="' + !!el._open + '">🪙 ' + sum + ' <span class="car">' + (el._open ? '▲' : '▼') + '</span></button>' +
+        // 一般網站的習慣：右上角＝目前登入的人（點數）＋登出
+        el.innerHTML = '<div class="pts-cbar"><button type="button" class="pts-chip" data-chip="1" aria-expanded="' + !!el._open + '" title="點數存摺：看每個人的點數、離 100 點還差幾點、連續學習天數">🪙 ' + sum + ' <span class="car">' + (el._open ? '▲' : '▼') + '</span></button>' +
+          (anyToken() ? '<button type="button" class="pts-cout" data-logout="1" title="這台裝置的所有人都登出">登出</button>' : '') + '</div>' +
           '<div class="pts-dd"' + (el._open ? '' : ' hidden') + '>' + el.innerHTML + '</div>';
       }
     });
