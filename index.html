@@ -35,9 +35,10 @@
   }
   h1{ font-family:'Kalam', cursive; font-size:34px; margin-bottom:8px; }
   .sub{ font-size:14px; color:#9AA89C; }
-  /* 右上角：B&M 學習 App（安裝到手機主畫面） */
+  /* 右上角：點數存摺（points.js compact，點開是下拉面板）＋ B&M 學習 App（安裝到手機主畫面） */
+  .top-right{ position:absolute; top:14px; right:16px; z-index:50; display:flex; align-items:center; gap:10px; }
   .app-btn{
-    position:absolute; top:14px; right:16px; display:flex; align-items:center; gap:8px;
+    display:flex; align-items:center; gap:8px;
     padding:6px 12px 6px 6px; border:1px solid #2A4A3C; border-radius:12px; background:#163026;
     color:#F7F3E8; text-decoration:none; text-align:left; line-height:1.25;
   }
@@ -47,7 +48,9 @@
   .app-btn small{ display:block; font-size:11px; color:#9AA89C; }
   @media (max-width:640px){
     header{ padding-top:64px; }
-    .app-btn{ top:10px; right:10px; padding:4px 10px 4px 4px; }
+    .top-right{ top:10px; right:10px; gap:6px; }
+    .app-btn{ padding:4px 8px 4px 4px; }
+    .app-btn b{ font-size:12px; }
     .app-btn img{ width:26px; height:26px; }
     .app-btn small{ display:none; }
   }
@@ -93,13 +96,13 @@
 </head>
 <body>
 <header>
-  <a class="app-btn" href="/app/" title="英文測驗系統＋美式生活館，一個入口；可以加到手機主畫面"><img src="/app/icon-192.png" alt=""><span><b>📱 安裝 B&amp;M 學習 App</b><small>加到手機主畫面</small></span></a>
+  <div class="top-right"><div id="ptsHome"></div>
+  <a class="app-btn" href="/app/" title="英文測驗系統＋美式生活館，一個入口；可以加到手機主畫面"><img src="/app/icon-192.png" alt=""><span><b>📱 安裝 B&amp;M 學習 App</b><small>加到手機主畫面</small></span></a></div>
   <div class="eyebrow">GROWING UP WITH ENGLISH</div>
   <h1>BRANDEN &amp; MELISSA 成長學習館</h1>
   <div class="sub">所有自製英文學習網站的入口，點卡片進入各個子網站</div>
 </header>
 <main>
-  <div id="ptsHome" style="max-width:560px;margin:0 auto 28px"></div>
   <div class="section-title">所有子網站</div>
   <div class="grid">
     <a class="project-card" href="https://jenlin2002.github.io/english-quiz/" target="_blank">
@@ -145,6 +148,6 @@
 </main>
 <footer>持續建置中，之後每完成一個新網站就會加進對應的分類裡。</footer>
 <script src="points.js"></script>
-<script>if (window.Points) Points.mount(document.getElementById('ptsHome'));</script>
+<script>if (window.Points) Points.mount(document.getElementById('ptsHome'), { compact: true });</script>
 </body>
 </html>

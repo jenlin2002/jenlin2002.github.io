@@ -100,6 +100,18 @@
     '.pts-kid em small{font-size:12px;font-weight:700;margin-left:2px}' +
     '@media (max-width:440px){.pts-kid{flex-direction:column;align-items:flex-start;gap:4px}.pts-kid b{font-size:14px}.pts-kid em{font-size:22px}}' +
     '.pts-bn-rule{font-size:12px;color:#6b5530;margin-top:8px}' +
+    // 孩子卡片：點數＋離下一個 100 點的進度條＋連續學習天數
+    '.pts-kid.full{flex-direction:column;align-items:stretch;gap:5px}' +
+    '.pts-kid .r1{display:flex;align-items:center;justify-content:space-between;gap:8px}' +
+    '.pts-bar{height:7px;border-radius:99px;background:#f0dfb0;overflow:hidden}.pts-bar i{display:block;height:100%;background:linear-gradient(90deg,#f0b94a,#d9822b);border-radius:99px}' +
+    '.pts-kid .goal{font-size:12px;font-weight:600;color:#8a6a35;line-height:1.35}.pts-kid .goal b{font-size:12px;color:#b5561c}' +
+    // compact：頁首右上角一顆按鈕，點開是下拉面板（網站首頁、App 首頁）
+    '.pts-banner.compact{position:relative;width:auto;padding:0;border:0;background:none;box-shadow:none}' +
+    '.pts-chip{display:flex;align-items:center;gap:8px;padding:7px 12px;border:2px solid #f0b94a;border-radius:12px;background:linear-gradient(135deg,#fff6d8,#ffe7a8);color:#5b3a0c;font:700 14px/1.2 system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif;cursor:pointer;white-space:nowrap}' +
+    '.pts-chip b{font-size:17px;font-variant-numeric:tabular-nums;color:#7a4b12}.pts-chip .sep{color:#d0a85a}.pts-chip .car{font-size:11px;color:#8a6a35}' +
+    '.pts-dd{position:absolute;right:0;top:calc(100% + 8px);z-index:8000;width:min(380px,calc(100vw - 20px));padding:14px 16px 12px;border:2px solid #f0b94a;border-radius:16px;background:linear-gradient(135deg,#fff6d8,#ffe7a8);color:#5b3a0c;box-shadow:0 12px 32px rgba(0,0,0,.35)}' +
+    '.pts-dd .pts-kids{grid-template-columns:1fr}' +
+    '@media (max-width:640px){.pts-chip{padding:6px 9px;font-size:12px}.pts-chip b{font-size:15px}.pts-chip .nm{display:none}.pts-dd{position:fixed;left:10px;right:10px;top:56px;width:auto;max-height:calc(100vh - 70px);overflow:auto}}' +
     '.pts-toast{position:fixed;left:50%;bottom:calc(70px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9100;max-width:min(92vw,420px);padding:11px 16px;border-radius:14px;background:#2f2a22;color:#fff;font:600 15px/1.45 system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);text-align:center}' +
     '.pts-toast.good{background:#1f6b3a}' +
     '.pts-mask[hidden],.pts-toast[hidden],.pts-cele[hidden]{display:none!important}' +
@@ -175,7 +187,7 @@
 
   function fmtTime(t) { var m = /^\d{4}-(\d\d)-(\d\d) (\d\d:\d\d)/.exec(t || ''); return m ? (m[1] + '/' + m[2] + ' ' + m[3]) : esc(t); }
 
-  var banners = [], kidBal = {}, kidFail = {};
+  var banners = [], kidBal = {}, kidFail = {}, kidStreak = {};
   function shownName(n) { return n === ADMIN ? '家長（測試）' : n; }
   function renderPill() {
     var cur = curName(), unlocked = !!(cur && tokenOf(cur)), adm = !!tokenOf(ADMIN);
@@ -186,20 +198,37 @@
       el.innerHTML = '<div class="pts-bn-head">🪙 點數存摺<small>' + (adm ? '家長模式：看得到孩子的點數' : gst ? '訪客：' + esc(gst) + '（不計點數）' : '點自己的名字，看明細、兌換') + '</small>' +
         (anyToken() ? '<button type="button" class="pts-out" data-logout="1">🔒 登出</button>' : gst ? '<button type="button" class="pts-out" data-logout="1">離開訪客模式</button>' : '') + '</div><div class="pts-kids">' +
         shownKids().map(function (k) {
-          var v = kidBal[k], isOpen = !!(tokenOf(k) || adm);
-          return '<button type="button" class="pts-kid' + (cur === k && tokenOf(k) ? ' on' : '') + '" data-kid="' + esc(k) + '"><b>' + esc(k) + '</b><em>' +
-            (!isOpen ? '<small>🔒 輸入 PIN</small>' : kidPractice[k] ? '<small>練習帳號</small>' : v != null ? v + '<small>點</small>' : kidFail[k] ? '<small>讀不到</small>' : '<small>…</small>') + '</em></button>';
+          var v = kidBal[k], isOpen = !!(tokenOf(k) || adm), has = isOpen && !kidPractice[k] && v != null;
+          return '<button type="button" class="pts-kid' + (has ? ' full' : '') + (cur === k && tokenOf(k) ? ' on' : '') + '" data-kid="' + esc(k) + '"><span class="r1"><b>' + esc(k) + '</b><em>' +
+            (!isOpen ? '<small>🔒 輸入 PIN</small>' : kidPractice[k] ? '<small>練習帳號</small>' : v != null ? v + '<small>點</small>' : kidFail[k] ? '<small>讀不到</small>' : '<small>…</small>') + '</em></span>' +
+            (has ? goalBar(v, kidStreak[k]) : '') + '</button>';
         }).join('') + '</div>' +
         (adm ? '<div class="pts-adm"><button type="button" data-adm="panel">👤 家長管理</button><button type="button" data-adm="mine">🧪 我的測試存摺</button></div>' : '') +
-        '<div class="pts-bn-rule">' + rulesLine() + '</div>';
+        '<div class="pts-bn-rule">' + rulesLine() + '<br>🔥 連續學習紅利：第 2 天 +' + streakBonusOf(2) + '、第 3、4 天 +' + streakBonusOf(3) + '、第 5 天起每天 +' + streakBonusOf(5) + '</div>';
+      if (el._compact) {   // 頁首右上角：一顆按鈕＋下拉面板
+        var open = shownKids().filter(function (k) { return (tokenOf(k) || adm) && !kidPractice[k]; });
+        var sum = open.length ? open.map(function (k) { return '<span class="nm">' + esc(k) + '</span> <b>' + (kidBal[k] != null ? kidBal[k] : '…') + '</b>'; }).join('<span class="sep">｜</span>') + ' 點'
+          : (adm ? '家長' : '登入看點數');
+        el.innerHTML = '<button type="button" class="pts-chip" data-chip="1" aria-expanded="' + !!el._open + '">🪙 ' + sum + ' <span class="car">' + (el._open ? '▲' : '▼') + '</span></button>' +
+          '<div class="pts-dd"' + (el._open ? '' : ' hidden') + '>' + el.innerHTML + '</div>';
+      }
     });
+  }
+  // 孩子卡片的進度條：離下一個 100 點（可換零用錢）還差幾點、可換幾次電腦時間、連續學習天數
+  function goalBar(v, streak) {
+    var n = ruleNums(), m = n.money.points, t = n.time.points;
+    var pct = v >= m ? 100 : Math.round(v / m * 100);
+    var txt = v >= m ? '可以兌換 <b>' + esc(n.money.label) + '</b> 了！' : '還差 <b>' + (m - v) + ' 點</b> 到 ' + m + ' 點（' + esc(n.money.label) + '）';
+    if (v >= t) txt += '・可換 ' + Math.floor(v / t) + ' 次電腦時間';
+    if (streak) txt += '<br>🔥 已連續學習 <b>' + streak + ' 天</b>';
+    return '<span class="pts-bar"><i style="width:' + pct + '%"></i></span><span class="goal">' + txt + '</span>';
   }
   function loadKids() {
     shownKids().forEach(function (k) {
       var own = tokenOf(k), tok = own || tokenOf(ADMIN);   // 孩子自己的憑證，或家長的憑證（只能看）
       if (!tok) { kidBal[k] = undefined; return; }
       call({ action: 'balance', name: k, token: tok }).then(function (d) {
-        if (d && d.ok) { kidBal[k] = d.balance; kidPractice[k] = !!d.practice; kidFail[k] = false; state.rules = d.rules || state.rules; }
+        if (d && d.ok) { kidBal[k] = d.balance; kidStreak[k] = d.streak || 0; kidPractice[k] = !!d.practice; kidFail[k] = false; state.rules = d.rules || state.rules; }
         else if (d && d.error === 'auth') { clearToken(own ? k : ADMIN); kidBal[k] = undefined; }
         else kidFail[k] = true;
       }).catch(function () { kidFail[k] = true; }).then(renderPill);
@@ -214,10 +243,16 @@
   }
   /** 把「點數橫幅」放進頁面上的某個元素（例如網站首頁）。
    *  這台裝置還沒有人驗證過 PIN 時，會先蓋住整個頁面，請小朋友選名字、輸入（或第一次設定）PIN。 */
-  API.mount = function (el) {
+  API.mount = function (el, opt) {
     if (!el) return;
-    var b = document.createElement('div'); b.className = 'pts-banner';
+    var b = document.createElement('div'); b.className = 'pts-banner' + (opt && opt.compact ? ' compact' : '');
+    if (opt && opt.compact) {   // 頁首右上角版：點按鈕展開／收起，點外面或按 Esc 收起
+      b._compact = true;
+      document.addEventListener('click', function (e) { if (b._open && (e.composedPath ? e.composedPath().indexOf(b) < 0 : !b.contains(e.target))) { b._open = false; renderPill(); } });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && b._open) { b._open = false; renderPill(); } });
+    }
     b.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('[data-chip]')) { b._open = !b._open; renderPill(); if (b._open) loadKids(); return; }
       if (e.target.closest && e.target.closest('[data-logout]')) return logoutAll();
       var ad = e.target.closest && e.target.closest('[data-adm]');
       if (ad) { if (ad.dataset.adm === 'panel') openAdmin(); else openMine(); return; }

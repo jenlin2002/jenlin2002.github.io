@@ -14,6 +14,7 @@
 
 ## 檔案與功能
 
+- **右上角（2026-10-18 使用者要求）**：`header` 裡的 `.top-right` 放兩顆：「🪙 點數」按鈕（`Points.mount(el, { compact: true })`：按鈕上顯示看得到的每個人的點數，點開是下拉面板：每人點數、離 100 點的進度條與還差幾點、可換幾次電腦時間、🔥 連續學習天數、家長管理／我的測試存摺、規則；點外面或 Esc 收起；手機寬度面板橫跨整個畫面）＋「📱 安裝 B&M 學習 App」。點數存摺原本在標題下面的大橫幅已拿掉。
 - `index.html`：BRANDEN & MELISSA 成長學習館，所有子網站的入口；上方有點數存摺橫幅（`points.js`）；「📱 安裝 B&M 學習 App」按鈕在**右上角**（`header` 裡的 `.app-btn`，2026-10-18 使用者要求從點數存摺下面移過去；手機寬度只顯示圖示＋名稱）。
 - `points.js`：學習點數存摺＋PIN 登入關卡。訪客模式（不用 PIN、不計點數）程式還在，但 **2026-10-04 使用者決定先關閉**：`GUEST_ENABLED = false`，要開放時三個 repo 都改成 true。english-quiz、daily_life_listening 各有一份，**三份內容要一樣**；
   主檔在私人 repo english-quiz-plan 的 `points/points.js`。後端是 Google Apps Script（`POINTS_URL`）。
