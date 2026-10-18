@@ -46,3 +46,6 @@
 - 連續學習紅利：第 2 天 +2、第 3、4 天 +5、第 5 天起每天 +10，中斷就重算；不算在每天 50 點上限內；存摺分頁記成類型「紅利」。
 - 程式在 `points.js`（7 份副本內容一致，主檔在 english-quiz-plan `points/points.js`）與後端 `Code.gs`（`CONFIG.STREAK_BONUS`）。
 - **要先更新 Apps Script 後端（貼新版 Code.gs → 部署新版本）紅利才會開始算**，步驟在 english-quiz-plan `points/README-點數存摺.md` 最後一節。
+
+- **GitHub Pages 部署卡住（2026-10-18）**：PR #10 合併後「pages build and deployment」一直排隊／進行中（沒有任何 job），網站停在上一版。處理方式：到 Actions 取消那次部署，再推一個新的 commit 到 main（例如更新這份 CLAUDE.md）觸發新的部署；單純 Re-run 那次不一定會好。查部署狀態：Actions → pages build and deployment。
+
