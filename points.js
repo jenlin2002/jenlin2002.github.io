@@ -603,6 +603,7 @@
       });
       document.body.appendChild(celeEl);
     }
+    if (d.per != null && d.rate != null && d.earned > 0) line += '📊 答對率 <b>' + Math.round(d.rate * 100) + '%</b>，每題 <b>' + d.per + ' 點</b>' + (d.per < 1 ? '（答對率到 50% 就有每題 1 點）' : d.per < 1.5 ? '（答對率到 90% 每題 1.5 點！）' : '（最高級！）') + '<br>';
     line += streakText(d);
     if (milestone) {
       title = '🏆 恭喜 ' + who + '，達到 ' + (Math.floor(bal / step) * step) + ' 點！';
@@ -632,7 +633,7 @@
     var n = ruleNums(), lim = n.lim;
     return '<div class="pts-rules"><div class="pts-rt">📖 點數規則</div>' +
       '<div class="pts-rs">怎麼賺點數</div><ul>' +
-      '<li>答對 <b>1 題</b> 得 <b>' + n.per + ' 點</b>（測驗做完會自動加）</li>' +
+      '<li>答對 1 題得幾點，看這份測驗的<b>答對率</b>（測驗做完會自動加，四捨五入成整數）：' + tiersText(true) + '</li>' +
       '<li>同一份測驗，<b>每天只有第一次</b>會加點，重做不再加</li>' +
       '<li>每天最多賺 <b>' + n.cap + ' 點</b></li>' +
       '<li>🔥 <b>連續學習紅利</b>：每天至少完成一份測驗（英文測驗、國家地理閱讀、圖解單字、段考題庫、美式生活館都算），連續第 2 天 <b>+' + streakBonusOf(2) + '</b>、第 3 天 <b>+' + streakBonusOf(3) + '</b>、第 4 天 <b>+' + streakBonusOf(4) + '</b>，第 5 天起<b>每天 +' + streakBonusOf(5) + '</b>（不算在每天上限內）；中斷一天就從第 1 天重新算</li></ul>' +
@@ -642,9 +643,21 @@
       '<li>按「兌換」後<b>馬上扣點</b>，系統會寄信通知爸媽，由爸媽幫你處理</li>' +
       '<li>每一筆賺到和用掉的點數，都會記在下面的明細裡</li></ul></div>';
   }
+  // 答對率級距（後端 rules.rateTiers；還沒更新的後端沒有，用預設）
+  function tiers() {
+    return (state.rules && state.rules.rateTiers) || [{ min: 0.9, per: 1.5 }, { min: 0.8, per: 1.2 }, { min: 0.7, per: 1.1 }, { min: 0.5, per: 1 }, { min: 0, per: 0.5 }];
+  }
+  function tiersText(bold) {
+    var t = tiers().slice().reverse();
+    return t.map(function (x, i) {
+      var lo = Math.round(x.min * 100), hi = i < t.length - 1 ? Math.round(t[i + 1].min * 100) : null;
+      var r = hi == null ? lo + '% 以上' : lo === 0 ? '低於 ' + hi + '%' : lo + '～' + hi + '%';
+      return r + ' ' + (bold ? '<b>' + x.per + '</b>' : x.per) + ' 點';
+    }).join('、');
+  }
   function rulesLine() {
     var n = ruleNums();
-    return '答對 1 題 = ' + n.per + ' 點・' + n.time.points + ' 點 = ' + n.time.minutes + ' 分鐘電腦・' + n.money.points + ' 點 = NT$50';
+    return '答對 1 題 = 0.5～1.5 點（答對率越高越多）・' + n.time.points + ' 點 = ' + n.time.minutes + ' 分鐘電腦・' + n.money.points + ' 點 = NT$50';
   }
 
   function renderModal() {
