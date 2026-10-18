@@ -603,7 +603,7 @@
       });
       document.body.appendChild(celeEl);
     }
-    if (d.per != null && d.rate != null && d.earned > 0) line += '📊 答對率 <b>' + Math.round(d.rate * 100) + '%</b>，每題 <b>' + d.per + ' 點</b>' + (d.per < 1 ? '（答對率到 50% 就有每題 1 點）' : d.per < 1.5 ? '（答對率到 90% 每題 1.5 點！）' : '（最高級！）') + '<br>';
+    if (d.per != null && d.rate != null && d.earned > 0) line += '📊 答對率 <b>' + Math.round(d.rate * 100) + '%</b>，每題 <b>' + d.per + ' 點</b>' + (d.per < 1 ? '（答對率到 50% 就有每題 1 點）' : d.per < 1.5 ? '（答對率到 90% 每題 1.5 點！）' : d.per < 2 ? '（全對每題 2 點！）' : '（全對，最高級！）') + '<br>';
     line += streakText(d);
     if (milestone) {
       title = '🏆 恭喜 ' + who + '，達到 ' + (Math.floor(bal / step) * step) + ' 點！';
@@ -645,19 +645,19 @@
   }
   // 答對率級距（後端 rules.rateTiers；還沒更新的後端沒有，用預設）
   function tiers() {
-    return (state.rules && state.rules.rateTiers) || [{ min: 0.9, per: 1.5 }, { min: 0.8, per: 1.2 }, { min: 0.7, per: 1.1 }, { min: 0.5, per: 1 }, { min: 0, per: 0.5 }];
+    return (state.rules && state.rules.rateTiers) || [{ min: 1, per: 2 }, { min: 0.9, per: 1.5 }, { min: 0.7, per: 1.2 }, { min: 0.6, per: 1.1 }, { min: 0.5, per: 1 }, { min: 0.3, per: 0.5 }, { min: 0, per: 0.25 }];
   }
   function tiersText(bold) {
     var t = tiers().slice().reverse();
     return t.map(function (x, i) {
       var lo = Math.round(x.min * 100), hi = i < t.length - 1 ? Math.round(t[i + 1].min * 100) : null;
-      var r = hi == null ? lo + '% 以上' : lo === 0 ? '低於 ' + hi + '%' : lo + '～' + hi + '%';
+      var r = hi == null ? (lo >= 100 ? '全對' : lo + '% 以上') : lo === 0 ? '低於 ' + hi + '%' : lo + '～' + hi + '%';
       return r + ' ' + (bold ? '<b>' + x.per + '</b>' : x.per) + ' 點';
     }).join('、');
   }
   function rulesLine() {
     var n = ruleNums();
-    return '答對 1 題 = 0.5～1.5 點（答對率越高越多）・' + n.time.points + ' 點 = ' + n.time.minutes + ' 分鐘電腦・' + n.money.points + ' 點 = NT$50';
+    return '答對 1 題 = 0.25～2 點（答對率越高越多）・' + n.time.points + ' 點 = ' + n.time.minutes + ' 分鐘電腦・' + n.money.points + ' 點 = NT$50';
   }
 
   function renderModal() {
