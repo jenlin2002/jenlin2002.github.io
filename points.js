@@ -122,6 +122,10 @@
     '.pts-out{border:0;background:#efe3c8;color:#5b4425;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}' +
     '.pts-bn-head .pts-out{float:right;margin:-2px 0 0 8px}' +
     '.pts-cele{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9150;width:min(92vw,440px);padding:16px 18px;border-radius:18px;background:linear-gradient(135deg,#fff6d8,#ffe29a);border:2px solid #f0b94a;color:#4a2f08;box-shadow:0 10px 32px rgba(0,0,0,.4);font-family:system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif}' +
+    '.pts-cele{box-sizing:border-box;animation:pts-pop .45s cubic-bezier(.2,1.4,.4,1)}@keyframes pts-pop{0%{transform:translateX(-50%) scale(.6);opacity:0}100%{transform:translateX(-50%) scale(1);opacity:1}}' +
+    '.pts-cele.big{top:50%;bottom:auto;transform:translate(-50%,-50%);animation:pts-pop2 .5s cubic-bezier(.2,1.4,.4,1);border-width:3px;padding:22px 20px;text-align:center}' +
+    '@keyframes pts-pop2{0%{transform:translate(-50%,-50%) scale(.5);opacity:0}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}' +
+    '.pts-cele.big .pts-cele-t{font-size:24px}' +
     '.pts-cele-t{font-size:20px;font-weight:800;line-height:1.35;margin-bottom:6px}' +
     '.pts-cele-b{font-size:16px;line-height:1.6}' +
     '.pts-cele-r{display:flex;gap:8px;margin-top:12px}' +
@@ -514,15 +518,29 @@
   var celeEl, celeTimer;
   function goalText(bal) {
     var n = ruleNums(), t = n.time, m = n.money;
-    if (bal >= m.points) return '你已經有 ' + bal + ' 點，可以兌換「' + t.label + '」或「' + m.label + '」囉！按「看我的存摺」就能兌換。';
-    if (bal >= t.points) return '你已經有 ' + bal + ' 點，現在就可以兌換「' + t.label + '」囉！再賺 ' + (m.points - bal) + ' 點，還能換「' + m.label + '」，請加油！';
-    return '你現在有 ' + bal + ' 點，還差 ' + (t.points - bal) + ' 點，就能兌換「' + t.label + '」，請加油！';
+    if (bal >= m.points) return '你已經有 ' + bal + ' 點，可以兌換「' + m.label + '」或「' + t.label + '」囉！按「看我的存摺」就能兌換。';
+    return '你現在有 ' + bal + ' 點，還差 ' + (m.points - bal) + ' 點就到 ' + m.points + ' 點，可以換「' + m.label + '」！' +
+      (bal >= t.points ? '（現在也可以先換「' + t.label + '」）' : '') + '請加油！';
+  }
+  // 連續學習紅利（後端還沒更新時 d.streak 不存在，就不顯示）
+  function streakText(d) {
+    if (!d || !d.streak) return '';
+    var nb = d.nextBonus || streakBonusOf(d.streak + 1);
+    if (d.bonus > 0) return '🔥 連續學習第 <b>' + d.streak + '</b> 天，紅利 <b>+' + d.bonus + ' 點</b>！明天再來還有 +' + nb + ' 點。<br>';
+    if (d.firstToday) return '🔥 今天是連續學習第 <b>' + d.streak + '</b> 天' + '' + '，明天再來就有紅利 +' + nb + ' 點！<br>';
+    return '🔥 已連續學習 <b>' + d.streak + '</b> 天，今天的紅利已經拿到了。<br>';
+  }
+  function streakBonusOf(days) {
+    var b = (state.rules && state.rules.streakBonus) || [0, 0, 2, 5, 5, 10];
+    return days < b.length ? b[days] : b[b.length - 1];
   }
   function celebrate(name, d, o) {
     if (!document.body) return;
     var n = ruleNums(), title, line = '', bal = d.balance, pre = o && o.test ? '🧪 家長測試・' : '', who = esc(shownName(name));
+    var got = (d.earned || 0) + (d.bonus || 0), step = n.money.points, before = bal - got;
+    var milestone = got > 0 && Math.floor(bal / step) > Math.floor(Math.max(0, before) / step);   // 這次跨過 100、200、300…
     if (d.earned > 0) {
-      title = o && o.test ? '🧪 家長測試：得到 ' + d.earned + ' 點' : '🎉 恭喜 ' + who + '，得到 ' + d.earned + ' 點！';
+      title = o && o.test ? '🧪 家長測試：得到 ' + got + ' 點' : '🎉 太棒了 ' + who + '，得到 ' + d.earned + ' 點' + (d.bonus ? '＋紅利 ' + d.bonus + ' 點' : '') + '！';
       if (o && o.test) line = '這次記在「家長的測試存摺」，孩子的點數不受影響。<br>';
       if (d.reason === 'capped') line += '今天的點數已經賺滿 ' + n.cap + ' 點了，明天再來！<br>';
     } else if (d.reason === 'duplicate') {
@@ -544,9 +562,18 @@
       });
       document.body.appendChild(celeEl);
     }
-    celeEl.innerHTML = '<div class="pts-cele-t">' + title + '</div><div class="pts-cele-b">' + line + esc(goalText(bal)) + '</div>' +
-      '<div class="pts-cele-r"><button type="button" data-c="open">🪙 看我的存摺</button><button type="button" data-c="x" class="no">關閉</button></div>';
+    line += streakText(d);
+    if (milestone) {
+      title = '🏆 恭喜 ' + who + '，達到 ' + (Math.floor(bal / step) * step) + ' 點！';
+      line = (d.earned > 0 ? '這次得到 ' + d.earned + ' 點' + (d.bonus ? '＋紅利 ' + d.bonus + ' 點' : '') + '。<br>' : '') + streakText(d) +
+        '你現在有 <b>' + bal + ' 點</b>，可以兌換「' + esc(n.money.label) + '」或「' + esc(n.time.label) + '」囉！要換嗎？';
+    }
+    celeEl.className = 'pts-cele' + (milestone ? ' big' : '');
+    celeEl.innerHTML = '<div class="pts-cele-t">' + title + '</div><div class="pts-cele-b">' + line + (milestone ? '' : esc(goalText(bal))) + '</div>' +
+      '<div class="pts-cele-r"><button type="button" data-c="open">' + (milestone ? '💰 去兌換' : '🪙 看我的存摺') + '</button><button type="button" data-c="x" class="no">' + (milestone ? '先存著' : '關閉') + '</button></div>';
+    if (toastEl) toastEl.hidden = true;
     celeEl.hidden = false;
+    celeEl.style.animation = 'none'; void celeEl.offsetWidth; celeEl.style.animation = '';
     clearTimeout(celeTimer); celeTimer = setTimeout(function () { celeEl.hidden = true; }, 20000);
   }
 
@@ -566,7 +593,8 @@
       '<div class="pts-rs">怎麼賺點數</div><ul>' +
       '<li>答對 <b>1 題</b> 得 <b>' + n.per + ' 點</b>（測驗做完會自動加）</li>' +
       '<li>同一份測驗，<b>每天只有第一次</b>會加點，重做不再加</li>' +
-      '<li>每天最多賺 <b>' + n.cap + ' 點</b></li></ul>' +
+      '<li>每天最多賺 <b>' + n.cap + ' 點</b></li>' +
+      '<li>🔥 <b>連續學習紅利</b>：每天至少完成一份測驗（英文測驗、國家地理閱讀、圖解單字、段考題庫、美式生活館都算），連續第 2 天 <b>+' + streakBonusOf(2) + '</b>、第 3 天 <b>+' + streakBonusOf(3) + '</b>、第 4 天 <b>+' + streakBonusOf(4) + '</b>，第 5 天起<b>每天 +' + streakBonusOf(5) + '</b>（不算在每天上限內）；中斷一天就從第 1 天重新算</li></ul>' +
       '<div class="pts-rs">怎麼兌換</div><ul>' +
       '<li><b>' + n.time.points + ' 點</b> = ' + esc(n.time.label) + (lim ? '（每天最多換 <b>' + lim + ' 分鐘</b>）' : '') + '</li>' +
       '<li><b>' + n.money.points + ' 點</b> = ' + esc(n.money.label) + '</li>' +
@@ -596,7 +624,8 @@
       var times = bal == null ? 0 : Math.floor(bal / tp);
       if (limit) times = Math.min(times, Math.max(0, Math.floor((limit - usedNow) / tm)));
       h += '<div class="pts-bal"><div class="n">' + (bal == null ? '…' : bal) + '<small>點</small></div>' +
-        '<div class="s">' + (bal == null ? '讀取中…' : '今天還可以換 ' + times + ' 次電腦時間（' + times * tm + ' 分鐘）') + '</div></div>';
+        '<div class="s">' + (bal == null ? '讀取中…' : '今天還可以換 ' + times + ' 次電腦時間（' + times * tm + ' 分鐘）' +
+          (state.streak ? '<br>🔥 已連續學習 ' + state.streak + ' 天' + (state.streakToday ? '' : '（今天做一份測驗就能接下去）') : '')) + '</div></div>';
       if (state.confirm) {
         var pk = packs.filter(function (x) { return x[0] === state.confirm; })[0];
         h += '<div class="pts-ask"><b>確定用 ' + pk[2].points + ' 點兌換「' + esc(pk[2].label) + '」嗎？</b><div>按下去會馬上扣點，並通知爸媽。</div>' +
@@ -634,7 +663,7 @@
         return ensureAuth(name, '請重新輸入 PIN').then(function (t) { if (t) return refresh(); close(); });
       }
       if (!d || !d.ok) state.failed = true;
-      if (d && d.ok && curName() === name) { state.practice = !!d.practice; kidPractice[name] = !!d.practice; state.balance = d.balance; state.ledger = d.ledger || []; state.rules = d.rules || state.rules; state.timeUsed = d.timeUsedToday || 0; if (name !== ADMIN) kidBal[name] = d.balance; }
+      if (d && d.ok && curName() === name) { state.practice = !!d.practice; kidPractice[name] = !!d.practice; state.balance = d.balance; state.ledger = d.ledger || []; state.rules = d.rules || state.rules; state.timeUsed = d.timeUsedToday || 0; state.streak = d.streak || 0; state.streakToday = !!d.streakToday; if (name !== ADMIN) kidBal[name] = d.balance; }
       else if (d && !d.ok) { state.msg = '讀不到存摺，請晚點再試。'; state.msgBad = true; }
     }).catch(function () { state.failed = true; state.msg = '連不上點數系統，請檢查網路。'; state.msgBad = true; })
       .then(function () { renderPill(); renderModal(); });
@@ -711,7 +740,7 @@
       }
       if (!d || !d.ok) { toast('🪙 點數這次沒記到，稍後重做一次就會補上。'); return d; }
       if (d.reason === 'practice') { kidPractice[name] = true; renderPill(); toast('🎯 做得好！（練習帳號不計點數）', true); return d; }
-      state.balance = d.balance; if (name !== ADMIN) kidBal[name] = d.balance; renderPill();
+      state.balance = d.balance; if (d.streak) { state.streak = d.streak; state.streakToday = true; } if (name !== ADMIN) kidBal[name] = d.balance; renderPill();
       celebrate(name, d, o);
       if (mask && !mask.hidden) refresh();
       return d;
@@ -725,6 +754,7 @@
     if (name !== ADMIN) state.name = name;
     return ensureAuth(name, '輸入 PIN，才能記下這次的點數').then(function (tok) {
       if (!tok) { toast('🪙 沒有輸入 PIN，這次沒有記到點數。'); return null; }
+      toast('🪙 做完了！正在幫你計算點數…', true);
       return doEarn(name, o, false);
     });
   };

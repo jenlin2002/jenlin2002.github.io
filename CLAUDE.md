@@ -38,3 +38,10 @@
 - **其他人＝家長開帳號（2026-10-04）**：除了 BRANDEN、MELISSA、家長，其他人要由家長在「家長管理 → 帳號管理」建立帳號（學生＝有存摺可賺點；只能練習＝不計點數），PIN 由家長設定；本人在關卡按「其他帳號登入」。訪客模式關閉（`GUEST_ENABLED = false`）。**要先更新 Apps Script 後端（貼新版 Code.gs → 部署新版本）才能用**，步驟在 plan repo `points/README-點數存摺.md` 最後一節。points.js 主檔與三個網站的副本已同步一致。
 
 - **`/stock` 短網址（2026-10-12）**：`jenlin2002.github.io/stock` 轉到台美股看盤，**由另一個公開 repo `jenlin2002/stock` 提供**（GitHub Pages，main／root），不在這個學習網站 repo 裡；這裡不要放任何股票相關的東西（使用者要求學習網站和股票分開）。
+
+## 連續學習紅利＋稱讚畫面（2026-10-18）
+
+- 送出測驗後跳出稱讚卡（得幾點、連續第幾天、還差幾點到 100 點）；每跨過 100 點跳出大的恭喜兌換畫面。
+- 連續學習紅利：第 2 天 +2、第 3、4 天 +5、第 5 天起每天 +10，中斷就重算；不算在每天 50 點上限內；存摺分頁記成類型「紅利」。
+- 程式在 `points.js`（7 份副本內容一致，主檔在 english-quiz-plan `points/points.js`）與後端 `Code.gs`（`CONFIG.STREAK_BONUS`）。
+- **要先更新 Apps Script 後端（貼新版 Code.gs → 部署新版本）紅利才會開始算**，步驟在 english-quiz-plan `points/README-點數存摺.md` 最後一節。
