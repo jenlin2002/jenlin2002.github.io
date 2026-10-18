@@ -580,7 +580,11 @@
     var n = ruleNums(), title, line = '', bal = d.balance, pre = o && o.test ? '🧪 家長測試・' : '', who = esc(shownName(name));
     var got = (d.earned || 0) + (d.bonus || 0), step = n.money.points, before = bal - got;
     var milestone = got > 0 && Math.floor(bal / step) > Math.floor(Math.max(0, before) / step);   // 這次跨過 100、200、300…
-    if (d.earned > 0) {
+    if (o && o.kind === 'fix-bonus') {
+      got = d.fixBonus || 0; before = bal - got; milestone = got > 0 && Math.floor(bal / step) > Math.floor(Math.max(0, before) / step);
+      title = got > 0 ? '✏️ 錯題全部訂正完成，補送 ' + got + ' 點！' : (d.reason === 'duplicate' ? '✏️ 錯題全部訂正完成！（這份今天已經補送過了）' : '✏️ 錯題全部訂正完成！');
+      line = '訂正錯題是最好的學習，繼續保持！<br>';
+    } else if (d.earned > 0) {
       title = o && o.test ? '🧪 家長測試：得到 ' + got + ' 點' : '🎉 太棒了 ' + who + '，得到 ' + d.earned + ' 點' + (d.bonus ? '＋紅利 ' + d.bonus + ' 點' : '') + '！';
       if (o && o.test) line = '這次記在「家長的測試存摺」，孩子的點數不受影響。<br>';
       if (d.reason === 'capped') line += '今天的點數已經賺滿 ' + n.cap + ' 點了，明天再來！<br>';
@@ -778,6 +782,7 @@
   // ---------- 賺點 ----------
   function doEarn(name, o, retried) {
     var params = { action: 'earn', name: name, label: o.label || '', mode: o.mode || '', correct: Math.max(0, Math.round(o.correct || 0)), total: Math.round(o.total) };
+    if (o.kind) params.kind = o.kind;   // 'fix-bonus'：段考題庫錯題全部訂正完成的補送點數
     var attempt = function (n) {
       return call(params).catch(function (err) {
         if (n < 1) return new Promise(function (r) { setTimeout(r, 2500); }).then(function () { return attempt(n + 1); });
