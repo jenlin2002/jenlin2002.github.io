@@ -14,7 +14,7 @@
 
 ## 檔案與功能
 
-- **右上角工具列（2026-10-18 使用者要求，像一般網站的登入區）**：`header` 裡的 `.top-right` 一列小按鈕（高 32px）：「🪙 BRANDEN 69｜MELISSA 48 點 ▼」（`Points.mount(el, { compact: true })`，點開下拉面板：每人點數、離 100 點的進度條與還差幾點、可換幾次電腦時間、🔥 連續學習天數、家長管理／我的測試存摺、規則；點外面或 Esc 收起；手機寬度面板橫跨畫面、只顯示數字）＋「登出」＋「安裝 App」。標題下的大橫幅已拿掉。`points.js` 用 `?v=` 版本號載入（改 points.js 時要把 v 加一，否則瀏覽器會用快取的舊版，舊版不認得 compact，會把大橫幅塞進右上角——使用者 10-18 就遇到）；CSS 另外把非 compact 的橫幅在右上角藏起來當保險。
+- **右上角工具列（2026-10-18 使用者要求，像一般網站的登入區）**：`header` 裡的 `.top-right` 小按鈕（高 32px），桌機兩行靠右：第一行「安裝 App」、第二行（使用者 10-18 指定的位置）「🪙 BRANDEN 69｜MELISSA 48 點 ▼」（`Points.mount(el, { compact: true })`，點開下拉面板：每人點數、離 100 點的進度條與還差幾點、可換幾次電腦時間、🔥 連續學習天數、家長管理／我的測試存摺、規則；點外面或 Esc 收起；手機寬度面板橫跨畫面、只顯示數字）＋「登出」；手機寬度排成一行。標題下的大橫幅已拿掉。`points.js` 用 `?v=` 版本號載入（改 points.js 時要把 v 加一，否則瀏覽器會用快取的舊版，舊版不認得 compact，會把大橫幅塞進右上角——使用者 10-18 就遇到）；CSS 另外把非 compact 的橫幅在右上角藏起來當保險。
 - `index.html`：BRANDEN & MELISSA 成長學習館，所有子網站的入口；上方有點數存摺橫幅（`points.js`）；「📱 安裝 B&M 學習 App」按鈕在**右上角**（`header` 裡的 `.app-btn`，2026-10-18 使用者要求從點數存摺下面移過去；手機寬度只顯示圖示＋名稱）。
 - `points.js`：學習點數存摺＋PIN 登入關卡。訪客模式（不用 PIN、不計點數）程式還在，但 **2026-10-04 使用者決定先關閉**：`GUEST_ENABLED = false`，要開放時三個 repo 都改成 true。english-quiz、daily_life_listening 各有一份，**三份內容要一樣**；
   主檔在私人 repo english-quiz-plan 的 `points/points.js`。後端是 Google Apps Script（`POINTS_URL`）。

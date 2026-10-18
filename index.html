@@ -35,8 +35,10 @@
   }
   h1{ font-family:'Kalam', cursive; font-size:34px; margin-bottom:8px; }
   .sub{ font-size:14px; color:#9AA89C; }
-  /* 右上角工具列（一般網站的登入區）：🪙 點數（points.js compact：點開是下拉面板）＋登出＋📱 App */
-  .top-right{ position:absolute; top:14px; right:16px; z-index:50; display:flex; align-items:center; gap:8px; }
+  /* 右上角工具列（一般網站的登入區）：📱 安裝 App；下一行 🪙 點數（points.js compact：點開是下拉面板）＋登出 */
+  /* 桌機：上面「安裝 App」、下面「🪙 點數＋登出」，靠右對齊、兩行疊起來，不壓到中間的標題（使用者 10-18 指定位置） */
+  .top-right{ position:absolute; top:14px; right:16px; z-index:50; display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
+  .top-right .app-btn{ order:-1; }
   .top-right .pts-banner:not(.compact){ display:none; }   /* 瀏覽器還在用舊版 points.js 時，不要把大橫幅塞進右上角 */
   .app-btn{
     display:flex; align-items:center; gap:6px; height:32px; padding:0 12px 0 5px;
@@ -47,7 +49,7 @@
   .app-btn img{ width:22px; height:22px; border-radius:6px; }
   @media (max-width:640px){
     header{ padding-top:58px; }
-    .top-right{ top:10px; right:10px; gap:6px; }
+    .top-right{ top:10px; right:10px; gap:6px; flex-direction:row; align-items:center; }
     .app-btn{ padding:0 9px 0 4px; font-size:12px; }
   }
   main{ max-width:1280px; margin:0 auto; padding:40px 20px 80px; }
