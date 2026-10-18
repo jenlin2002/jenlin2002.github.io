@@ -14,7 +14,7 @@
 
 ## 檔案與功能
 
-- `index.html`：BRANDEN & MELISSA 成長學習館，所有子網站的入口；上方有點數存摺橫幅（`points.js`）與「B&M 學習 App」連結。
+- `index.html`：BRANDEN & MELISSA 成長學習館，所有子網站的入口；上方有點數存摺橫幅（`points.js`）；「📱 安裝 B&M 學習 App」按鈕在**右上角**（`header` 裡的 `.app-btn`，2026-10-18 使用者要求從點數存摺下面移過去；手機寬度只顯示圖示＋名稱）。
 - `points.js`：學習點數存摺＋PIN 登入關卡。訪客模式（不用 PIN、不計點數）程式還在，但 **2026-10-04 使用者決定先關閉**：`GUEST_ENABLED = false`，要開放時三個 repo 都改成 true。english-quiz、daily_life_listening 各有一份，**三份內容要一樣**；
   主檔在私人 repo english-quiz-plan 的 `points/points.js`。後端是 Google Apps Script（`POINTS_URL`）。
 - `app/`：**B&M 學習 App**（2026-10-04），可「加入主畫面」的網頁 App（PWA）。一個入口放英文測驗系統與美式生活館。
