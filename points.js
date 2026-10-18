@@ -572,7 +572,7 @@
     return '🔥 已連續學習 <b>' + d.streak + '</b> 天，今天的紅利已經拿到了。<br>';
   }
   function streakBonusOf(days) {
-    var b = (state.rules && state.rules.streakBonus) || [0, 0, 2, 5, 5, 10];
+    var b = (state.rules && state.rules.streakBonus) || [0, 0, 2, 3, 3, 4];
     return days < b.length ? b[days] : b[b.length - 1];
   }
   function celebrate(name, d, o) {
