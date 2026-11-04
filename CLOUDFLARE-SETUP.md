@@ -54,7 +54,7 @@
    （`app/install-qr.png` 的 QR Code 還是舊網址，換新網址後要重做。）
 3. Cloudflare 後台 → Workers & Pages → `learn` → Settings → **Variables and Secrets**（Production）新增：
    - `ACCESS_TEAM` = `<團隊>.cloudflareaccess.com`
-   - `ACCESS_AUD` = 上面複製的 AUD Tag
+   - `ACCESS_AUD` = 上面複製的 AUD Tag（新版後台常找不到：先只設 `ACCESS_TEAM`、`USER_MAP`，部署、用 Google 登入後開 `<網址>/api/aud`，畫面上的 `aud` 就是，再填進 `ACCESS_AUD`、重新部署）
    - `USER_MAP` = `孩子1的gmail=BRANDEN,孩子2的gmail=MELISSA,家長的gmail=PARENT`（用 Secret 類型，email 不放 repo）
 4. 再 Run workflow 一次（改了變數要重新部署才生效）。
 

@@ -22,7 +22,8 @@ async function keys(team) {
   return certCache.keys;
 }
 
-async function verify(jwt, env) {
+// 只驗證簽章（是自己團隊發的、沒過期），不比對 AUD
+async function verifySig(jwt, env) {
   const [h, p, s] = jwt.split('.');
   if (!h || !p || !s) return null;
   const head = JSON.parse(new TextDecoder().decode(b64url(h)));
@@ -32,6 +33,22 @@ async function verify(jwt, env) {
   const key = await crypto.subtle.importKey('jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
   const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, b64url(s), new TextEncoder().encode(h + '.' + p));
   if (!ok) return null;
+  if (body.exp && body.exp * 1000 < Date.now()) return null;
+  return body;
+}
+
+// 設定用：讀出這個網站登入憑證裡的 AUD Tag（後台找不到 AUD Tag 時，登入後開 /api/aud 看）
+export async function readAud(request, env) {
+  const jwt = request.headers.get('Cf-Access-Jwt-Assertion');
+  if (!jwt || !env.ACCESS_TEAM) return null;
+  let body = null;
+  try { body = await verifySig(jwt, env); } catch (e) { return null; }
+  return body ? (Array.isArray(body.aud) ? body.aud : [body.aud]) : null;
+}
+
+async function verify(jwt, env) {
+  const body = await verifySig(jwt, env);
+  if (!body) return null;
   const aud = Array.isArray(body.aud) ? body.aud : [body.aud];
   if (aud.indexOf(env.ACCESS_AUD) < 0) return null;
   if (body.exp && body.exp * 1000 < Date.now()) return null;
