@@ -20,7 +20,47 @@
   var mem = {};
   function get(k) { try { return localStorage.getItem(k); } catch (e) { return (k in mem) ? mem[k] : null; } }
   function set(k, v) { try { localStorage.setItem(k, v); } catch (e) { mem[k] = v; } }
-  function url() { return (get('quizPointsUrl') || POINTS_URL || '').trim(); }
+  function url() { return (get('quizPointsUrl') || (cf.proxy ? '/api/points' : '') || POINTS_URL || '').trim(); }
+
+  // ---------- Cloudflare Access 登入（Google 帳號，2026-11-04）----------
+  // 網站放在 Cloudflare Pages 時，Access 先要求用 Google 帳號登入；/api/me（首頁 repo functions/api/me.js）回傳登入者名字。
+  // 有名字：自動設定 quizStudentName、不出現「你是誰？」關卡；proxy=true（Cloudflare 設了 POINTS_SECRET）時點數改走 /api/points，連 PIN 都不用。
+  // 在 jenlin2002.github.io 或本機時 /api/me 不存在，一切照舊（選名字＋PIN）。
+  var cf = { name: '', proxy: false };
+  var onCF = location.protocol === 'https:' && !/(^|\.)github\.io$/.test(location.hostname);
+  var cfP = null;
+  function cfReady() {
+    if (cfP) return cfP;
+    var cached = null;
+    try { cached = JSON.parse(sessionStorage.getItem('cfMe') || 'null'); } catch (e) {}
+    var p = !onCF ? Promise.resolve(null) : (cached && cached.name) ? Promise.resolve(cached) :
+      fetch('/api/me', { credentials: 'same-origin', cache: 'no-store' })
+        .then(function (r) { return r.ok && /json/.test(r.headers.get('content-type') || '') ? r.json() : null; })
+        .then(function (d) { if (d && d.name) { try { sessionStorage.setItem('cfMe', JSON.stringify(d)); } catch (e) {} return d; } return null; })
+        .catch(function () { return null; });
+    return (cfP = p.then(function (d) {
+      if (!d || !d.name) return null;
+      cf.name = String(d.name).trim().toUpperCase(); cf.proxy = !!d.proxy;
+      if (get('pointsGuest')) set('pointsGuest', '');
+      if (cf.name !== ADMIN && String(get('quizStudentName') || '').toUpperCase() !== cf.name) {
+        var had = get('quizStudentName');
+        set('quizStudentName', cf.name); state.name = cf.name;
+        if (had) { location.reload(); return new Promise(function () {}); }   // 這台裝置上一個人留下別的名字：換成登入者後重新整理一次
+      }
+      return d;
+    }));
+  }
+  // 決定要不要擋：Cloudflare 登入了就不出現關卡（還沒有 PIN 憑證時只問一次 PIN）；否則照舊
+  function gateCheck() {
+    cfReady().then(function () {
+      if (cf.name) { if (!tokenOf(cf.name)) ensureAuth(cf.name, '這台裝置第一次使用，請輸入 ' + cf.name + ' 的 PIN（之後就不用了）'); return; }
+      if (needGate()) showGate();
+    });
+  }
+  function cfLogout() {
+    try { sessionStorage.removeItem('cfMe'); } catch (e) {}
+    location.href = '/cdn-cgi/access/logout';
+  }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
   var KIDS = ['BRANDEN', 'MELISSA'], ADMIN = 'PARENT', KNOWN = ['BRANDEN', 'MELISSA', 'PARENT'];
@@ -28,7 +68,7 @@
   var GUEST_ENABLED = false;
   // ---------- 登入憑證：PIN 驗證通過後由後端發給，存在這台裝置（同一個網站的所有頁面共用） ----------
   function tokens() { try { return JSON.parse(get('quizPointsTokens') || '{}') || {}; } catch (e) { return {}; } }
-  function tokenOf(n) { return tokens()[n] || ''; }
+  function tokenOf(n) { if (cf.proxy && n === cf.name) return 'cf'; return tokens()[n] || ''; }   // 'cf'：/api/points 代轉時由 Cloudflare 證明身分
   function setToken(n, t) { var o = tokens(); o[n] = t; set('quizPointsTokens', JSON.stringify(o)); endGuest(); }
   function clearToken(n) { var o = tokens(); delete o[n]; set('quizPointsTokens', JSON.stringify(o)); }
   function anyToken() { var o = tokens(); return Object.keys(o).some(function (k) { return !!o[k]; }); }
@@ -245,6 +285,7 @@
     endGuest(); Object.keys(tokens()).forEach(clearToken); kidBal = {}; state.balance = null; state.ledger = []; state.force = '';   // 家長建立的帳號也要一起登出
     if (mask) mask.hidden = true;
     if (adminMask) adminMask.hidden = true;
+    if (cf.name) return cfLogout();   // Cloudflare 登入：連 Google 登入一起登出，換人重新登入
     renderPill(); showGate();
   }
   /** 把「點數橫幅」放進頁面上的某個元素（例如網站首頁）。
@@ -272,7 +313,7 @@
       });
     });
     el.appendChild(b); banners.push(b); renderPill(); loadKids();
-    if (needGate()) showGate();
+    gateCheck();
   };
 
   // ---------- 進入頁面的「你是誰？」關卡 ----------
@@ -411,7 +452,7 @@
     KIDS.forEach(function (k) {
       call({ action: 'balance', name: k, token: tokenOf(ADMIN) }).then(function (d) {
         if (d && d.ok) { adm.data[k] = d; kidBal[k] = d.balance; state.rules = d.rules || state.rules; }
-        else if (d && d.error === 'auth') { clearToken(ADMIN); adminMask.hidden = true; renderPill(); if (needGate()) showGate(); }
+        else if (d && d.error === 'auth') { clearToken(ADMIN); adminMask.hidden = true; renderPill(); gateCheck(); }
       }).catch(function () { adm.msg = '連不上點數系統，請檢查網路。'; adm.bad = true; }).then(function () { renderAdmin(); renderPill(); });
     });
   }
@@ -755,6 +796,7 @@
       var n = b.dataset.n; set('quizStudentName', n); state.name = n; state.balance = null; state.ledger = [];
       ensureAuth(n).then(function (tok) { if (!tok) return; renderModal(); refresh(); });
     }
+    else if (a === 'logout' && cf.name) { close(); logoutAll(); }
     else if (a === 'logout') { var me = curName(); clearToken(me); if (me !== ADMIN) kidBal[me] = undefined; state.balance = null; state.ledger = []; close(); renderPill(); if (needGate()) showGate(); }
     else if (a === 'redeem') { state.confirm = b.dataset.k; state.msg = ''; state.rid = 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); renderModal(); }
     else if (a === 'no') { state.confirm = ''; renderModal(); }
@@ -824,8 +866,8 @@
     document.head.appendChild(styleEl);
     pill = document.createElement('button'); pill.type = 'button'; pill.className = 'pts-pill'; pill.setAttribute('aria-label', '開啟點數存摺');
     pill.addEventListener('click', open); document.body.appendChild(pill); renderPill();
-    var n = curName(); if (n && tokenOf(n)) refresh();
-    if (needGate()) showGate();   // 這台裝置沒有人驗證過：每一頁都先擋住，請選名字、輸入 PIN
+    cfReady().then(function () { var n = curName(); if (n && tokenOf(n)) refresh(); renderPill(); });
+    gateCheck();   // 沒有 Cloudflare 登入、這台裝置也沒有人驗證過：每一頁都先擋住，請選名字、輸入 PIN
   }
   if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);
 })();

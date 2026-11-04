@@ -1,0 +1,103 @@
+# 把 6 個學習網站 repo 合成一個網站，部署到 Cloudflare Pages（2026-11-04）
+# 為什麼合在一起：登入憑證、quizStudentName、單字進度都存在 localStorage，要同一個網址才能共用。
+# 網址結構和 GitHub Pages 一樣：/（首頁）、/english-quiz/、/vocab-king/、/daily_life_listening/、/nat-geo-reading/、/exam-bank/
+# 需要的 GitHub Secrets（使用者自己在 GitHub → Settings → Secrets and variables → Actions 輸入）：
+#   CLOUDFLARE_API_TOKEN   權限：Account → Cloudflare Pages → Edit
+#   CLOUDFLARE_ACCOUNT_ID  Cloudflare 後台右側的 Account ID
+#   REPOS_TOKEN            （只有子站 repo 改成 Private 時才需要）可讀那些 repo 的 GitHub token
+# 什麼時候部署：這個 repo push、手動按 Run workflow、每 15 分鐘檢查一次子站有沒有新的 commit（沒有就不部署）。
+name: 部署到 Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '*/15 * * * *'
+
+concurrency:
+  group: cf-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      PROJECT: learn
+      SUBSITES: english-quiz vocab-king daily_life_listening nat-geo-reading exam-bank
+      REPOS_TOKEN: ${{ secrets.REPOS_TOKEN }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 準備
+        run: |
+          # src <repo>：子站 repo 的 clone 網址（有 REPOS_TOKEN 就帶上，Private repo 才讀得到）
+          cat > "$RUNNER_TEMP/src.sh" <<'EOF'
+          src() { if [ -n "$REPOS_TOKEN" ]; then echo "https://x-access-token:${REPOS_TOKEN}@github.com/jenlin2002/$1.git"; else echo "https://github.com/jenlin2002/$1.git"; fi; }
+          EOF
+          echo "BASH_ENV=$RUNNER_TEMP/src.sh" >> "$GITHUB_ENV"
+
+      - name: 檢查子站有沒有新的 commit
+        id: check
+        env:
+          HAS_CF: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+        run: |
+          if [ "$HAS_CF" != "true" ]; then
+            echo "還沒設定 CLOUDFLARE_API_TOKEN，先不部署（見 CLOUDFLARE-SETUP.md）"
+            echo "key=none" >> "$GITHUB_OUTPUT"; echo "skip=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          heads="$(git rev-parse HEAD)"
+          for r in $SUBSITES; do
+            h=$(git ls-remote "$(src $r)" refs/heads/main | cut -f1)
+            heads="$heads $r:$h"
+          done
+          echo "$heads"
+          key=$(echo "$heads" | sha1sum | cut -c1-16)
+          echo "key=$key" >> "$GITHUB_OUTPUT"
+
+      - name: 上次部署的版本
+        id: last
+        if: github.event_name == 'schedule' && steps.check.outputs.skip != 'true'
+        uses: actions/cache@v4
+        with:
+          path: .deployed
+          key: deployed-${{ steps.check.outputs.key }}
+
+      - name: 組合網站
+        if: steps.check.outputs.skip != 'true' && steps.last.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p dist
+          rsync -a --exclude '.git' --exclude '.github' --exclude 'functions' --exclude 'tmp' --exclude 'dist' --exclude 'CLAUDE.md' --exclude 'CLOUDFLARE-SETUP.md' ./ dist/
+          for r in $SUBSITES; do
+            git clone --depth 1 "$(src $r)" "tmp/$r"
+            rsync -a --exclude '.git' --exclude '.github' --exclude '.claude' --exclude 'CLAUDE.md' --exclude '/tools/' "tmp/$r/" "dist/$r/"
+          done
+          # Cloudflare Pages 單一檔案上限 25 MiB（段考題庫的聽力 zip、社會 PDF 超過）：
+          # 拿掉這些檔，改用 _redirects 轉到 GitHub 原始檔（raw.githubusercontent.com，repo 要是 Public）
+          : > dist/_redirects
+          find dist -type f -size +24M -print0 | while IFS= read -r -d '' f; do
+            rel="${f#dist/}"; repo="${rel%%/*}"; inner="${rel#*/}"
+            enc=$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$rel")
+            encin=$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$inner")
+            echo "/$enc https://raw.githubusercontent.com/jenlin2002/$repo/main/$encin 302" >> dist/_redirects
+            rm "$f"; echo "大檔改轉址：$rel"
+          done
+          echo "檔案數：$(find dist -type f | wc -l)（Cloudflare Pages 上限 20000）"
+          # 子站裡寫死的 https://jenlin2002.github.io/… 改成同一個網站的相對路徑（repo 裡的檔案不用改）
+          find dist -type f \( -name '*.html' -o -name '*.js' -o -name '*.json' -o -name '*.webmanifest' \) -print0 \
+            | xargs -0 sed -i 's#https://jenlin2002\.github\.io/#/#g'
+          # Access 擋住時，手機加入主畫面抓不到圖示：圖示另外在 Access 設 Bypass（見 CLAUDE.md）
+          du -sh dist
+
+      - name: 部署
+        if: steps.check.outputs.skip != 'true' && steps.last.outputs.cache-hit != 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx --yes wrangler@3 pages project create "$PROJECT" --production-branch main || true
+          npx --yes wrangler@3 pages deploy dist --project-name "$PROJECT" --branch main --commit-dirty=true
+          mkdir -p .deployed && echo "${{ steps.check.outputs.key }}" > .deployed/key
