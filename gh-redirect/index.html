@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>成長學習館搬家了</title>
+<!-- 舊網址 jenlin2002.github.io（含 /english-quiz/ 等子站）一律轉到新網站同一路徑（2026-11-05）。
+     GitHub Pages 由 .github/workflows/github-pages-redirect.yml 只發布這個資料夾；repo 其他檔案只給 Cloudflare 用。 -->
+<script>
+  var SITE = 'https://bmlearn.pages.dev';
+  // 舊的 B&M 學習 App service worker 停用
+  if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+  location.replace(SITE + location.pathname + location.search + location.hash);
+</script>
+<style>body{margin:0;background:#1b3a2f;color:#fffdf6;font:18px/1.6 system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center;text-align:center;padding:20px}a{color:#e8b94a}</style>
+</head>
+<body>
+<div>
+  <h1>成長學習館搬家了</h1>
+  <p>新網址：<a id="go" href="https://bmlearn.pages.dev/">bmlearn.pages.dev</a></p>
+  <p>用自己的 Google 帳號登入。主畫面上舊的「B&amp;M 學習」圖示請刪掉，改加新網址。</p>
+</div>
+<script>document.getElementById('go').href = SITE + location.pathname + location.search + location.hash;</script>
+</body>
+</html>

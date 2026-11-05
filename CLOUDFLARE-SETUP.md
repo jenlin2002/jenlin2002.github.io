@@ -1,5 +1,8 @@
 # 學習網站搬到 Cloudflare（Google 帳號登入）設定步驟
 
+> **2026-11-05 改網址**：主網址改成 **https://bmlearn.pages.dev**（Pages 專案 `bmlearn`），步驟見最後「七、改成 bmlearn.pages.dev」。
+> 下面一～六節寫的是第一次設定（當時專案叫 `learn`、網址 learn-6td.pages.dev），之後看到 `learn` 就換成 `bmlearn`。
+
 2026-11-04 公司電腦規劃（使用者選「B：Cloudflare Access ＋ Google 帳號登入」）。做法和股票網站一樣（Cloudflare Pages ＋ Access），
 但學習網站**和股票網站完全分開**（不同的 Pages 專案、不同的 Access 應用程式）。
 
@@ -90,3 +93,27 @@
 4. 部署新版本（網址不變）。
 5. Cloudflare `learn` → Variables and Secrets 新增 `POINTS_URL`（Apps Script /exec 網址）、`POINTS_SECRET`（同一串密語，Secret 類型）→ Run workflow。
    之後 `/api/me` 會回 `proxy:true`，points.js 自動改走 `/api/points`，不再問 PIN。
+
+## 七、改成 bmlearn.pages.dev（2026-11-05，使用者要好打的網址）
+
+程式這邊已改好：部署目標改成 Pages 專案 `bmlearn`；舊的 `learn` 專案（learn-6td.pages.dev）每次 push／手動部署時換成「轉到新網址同一路徑」；
+舊網址 jenlin2002.github.io 改由 `gh-redirect/`（workflow「舊網址轉到新網站」）發布轉址頁；新 QR Code 在 `app/install.html`、`app/install-qr.png`。
+
+**順序很重要：先做 1（Access 先擋住新網址），再 Push，否則新網站剛建好的幾分鐘沒有登入保護。**
+
+1. Zero Trust → Access → Applications →「成長學習館」→ Edit → Public hostnames（Domain）**新增兩筆**：`bmlearn.pages.dev`、`*.bmlearn.pages.dev`（learn-6td 那兩筆先留著）→ Save。
+   AUD Tag 不變，所以 `ACCESS_AUD` 用同一個值。有做「學習 App 圖示」Bypass 應用程式的話，也加上 `bmlearn.pages.dev` 的同樣路徑。
+2. GitHub Desktop → jenlin2002.github.io → Push。Actions 會自動跑「部署到 Cloudflare Pages」，第一次會建立 `bmlearn` 專案（約 10 分鐘）。
+   跑完到 Cloudflare → Workers & Pages → `bmlearn`，確認網址是 `bmlearn.pages.dev`（如果被加了尾碼，例如 bmlearn-xxx.pages.dev，告訴 Claude 改程式和 QR Code）。
+3. `bmlearn` → Settings → Variables and Secrets（Production）新增，值和 `learn` 專案一樣（自己輸入／複製）：
+   `ACCESS_TEAM`（Text）、`ACCESS_AUD`（Text）、`USER_MAP`（Secret，重新打一次 email=名字）；第二階段做了的話再加 `POINTS_URL`、`POINTS_SECRET`。
+4. GitHub → Actions →「部署到 Cloudflare Pages」→ Run workflow（變數要重新部署才生效）。
+5. 測試：新的無痕視窗開 `https://bmlearn.pages.dev/api/me` → 看到 `"name":"PARENT"`；再開首頁、做一份測驗。
+   開 `https://learn-6td.pages.dev/english-quiz/` → 應該自動跳到 `https://bmlearn.pages.dev/english-quiz/`。
+6. 舊網址 jenlin2002.github.io 轉過去（5 確認沒問題後再做）：
+   - jenlin2002.github.io repo → Settings → Pages → Build and deployment → Source 選「**GitHub Actions**」→ Actions →「舊網址轉到新網站」→ Run workflow。
+   - english-quiz、daily_life_listening、vocab-king、nat-geo-reading、exam-bank 五個 repo：Settings → Pages → Branch 選「**None**」→ Save（關掉子站的 GitHub Pages）。
+   - 測試：開 `https://jenlin2002.github.io/english-quiz/` → 會跳到 `https://bmlearn.pages.dev/english-quiz/`。
+   - repo 維持 Public（Cloudflare 部署要讀、段考題庫大檔從 GitHub 原始檔下載）。
+7. iPad／手機：刪掉主畫面舊的「B&M 學習」圖示 → 印出或打開 `app/install.html`（QR Code 指向 `https://bmlearn.pages.dev/app/`）→ 用相機掃 → Google 登入 → 加入主畫面。
+8. 過幾週確定沒人用舊 Cloudflare 網址後：Cloudflare 刪掉 `learn` 專案、Access 刪掉 learn-6td 兩筆網址，workflow 裡 `OLD_PROJECT` 那行和「舊網址轉址」步驟一起刪。

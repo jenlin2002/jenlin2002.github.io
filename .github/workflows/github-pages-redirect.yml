@@ -1,0 +1,41 @@
+# 舊網址 jenlin2002.github.io → 新網站 https://bmlearn.pages.dev（2026-11-05）
+# GitHub Pages 只發布 gh-redirect/（每一頁、每個找不到的路徑都轉到新網站同一路徑）；repo 其他檔案只給 Cloudflare 部署用。
+# 要先在 repo Settings → Pages → Build and deployment → Source 選「GitHub Actions」，再手動 Run workflow。
+# 5 個子站 repo（english-quiz 等）的 GitHub Pages 要關掉（Settings → Pages → Branch 選 None → Save），
+# 關掉後 jenlin2002.github.io/english-quiz/… 會落到這裡的 404.html，一樣轉到新網址對應路徑。
+name: 舊網址轉到新網站
+
+on:
+  workflow_dispatch:   # 只手動執行（Source 還沒改成 GitHub Actions 前自動跑會失敗）；改了 gh-redirect/ 要再按一次 Run workflow
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: gh-pages-redirect
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: 準備轉址頁
+        run: |
+          mkdir -p out/app
+          cp gh-redirect/index.html out/index.html
+          cp gh-redirect/index.html out/404.html
+          cp gh-redirect/index.html out/app/index.html
+          cp gh-redirect/sw.js out/sw.js
+          touch out/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+      - id: deployment
+        uses: actions/deploy-pages@v4

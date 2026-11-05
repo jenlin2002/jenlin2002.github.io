@@ -23,7 +23,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      PROJECT: learn
+      PROJECT: bmlearn                       # 網址 https://bmlearn.pages.dev（2026-11-05 從 learn 改名，使用者要好打的網址）
+      OLD_PROJECT: learn                     # 舊網址 learn-6td.pages.dev：只放一個轉址到新網址；確定沒人用、在 Cloudflare 刪掉 learn 專案後可把這行和「舊網址轉址」步驟刪掉
+      SITE_URL: https://bmlearn.pages.dev
       SUBSITES: english-quiz vocab-king daily_life_listening nat-geo-reading exam-bank
       REPOS_TOKEN: ${{ secrets.REPOS_TOKEN }}
     defaults:
@@ -70,7 +72,7 @@ jobs:
         if: steps.check.outputs.skip != 'true' && steps.last.outputs.cache-hit != 'true'
         run: |
           mkdir -p dist
-          rsync -a --exclude '.git' --exclude '.github' --exclude 'functions' --exclude 'tmp' --exclude 'dist' --exclude 'CLAUDE.md' --exclude 'CLOUDFLARE-SETUP.md' ./ dist/
+          rsync -a --exclude '.git' --exclude '.github' --exclude 'functions' --exclude 'tmp' --exclude 'dist' --exclude 'gh-redirect' --exclude 'CLAUDE.md' --exclude 'CLOUDFLARE-SETUP.md' ./ dist/
           for r in $SUBSITES; do
             git clone --depth 1 "$(src $r)" "tmp/$r"
             rsync -a --exclude '.git' --exclude '.github' --exclude '.claude' --exclude 'CLAUDE.md' --exclude '/tools/' "tmp/$r/" "dist/$r/"
@@ -101,3 +103,16 @@ jobs:
           npx --yes wrangler@3 pages project create "$PROJECT" --production-branch main || true
           npx --yes wrangler@3 pages deploy dist --project-name "$PROJECT" --branch main --commit-dirty=true
           mkdir -p .deployed && echo "${{ steps.check.outputs.key }}" > .deployed/key
+
+      # 舊的 Cloudflare 網址（learn 專案）整個換成「轉到新網址同一路徑」；只在 push／手動執行時做（定時檢查不重複做）
+      - name: 舊網址轉址
+        if: steps.check.outputs.skip != 'true' && github.event_name != 'schedule' && env.OLD_PROJECT != ''
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          mkdir -p old-site
+          echo "/* $SITE_URL/:splat 301" > old-site/_redirects
+          echo "<!doctype html><meta charset=utf-8><meta http-equiv=refresh content=\"0;url=$SITE_URL/\"><a href=\"$SITE_URL/\">網址改成 $SITE_URL</a>" > old-site/index.html
+          npx --yes wrangler@3 pages deploy old-site --project-name "$OLD_PROJECT" --branch main --commit-dirty=true

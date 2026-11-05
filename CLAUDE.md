@@ -2,13 +2,16 @@
 
 ## 登入改成 Cloudflare Access＋Google 帳號（2026-11-04 規劃，程式已做好、等使用者設定後台）
 
-- **2026-11-04 晚上進度**：後台已設好——網址 `https://learn-6td.pages.dev`（Pages 專案 `learn`）、Access 應用程式「成長學習館」（Google 登入、Policy「家人」3 個 Gmail）、Pages 變數 `ACCESS_TEAM`、`USER_MAP`、`ACCESS_AUD` 都已設；`/api/me` 用家長 Gmail 測試回 `PARENT` ✅。
+- **2026-11-04 晚上進度**：後台已設好——網址 `https://learn-6td.pages.dev`（Pages 專案 `learn`；2026-11-05 改成 `https://bmlearn.pages.dev`、專案 `bmlearn`，舊的只剩轉址）、Access 應用程式「成長學習館」（Google 登入、Policy「家人」3 個 Gmail）、Pages 變數 `ACCESS_TEAM`、`USER_MAP`、`ACCESS_AUD` 都已設；`/api/me` 用家長 Gmail 測試回 `PARENT` ✅。
   曾遇到 Access「Failed to fetch user/group information」：是 Cloudflare 裡 Google 的 App ID／Client secret 不對，重貼後 Test 通過（Google 用戶端密鑰最多 2 組，舊的已刪）。
-  還沒做：用孩子帳號測試、首頁／測驗／點數實測、圖示 Bypass 應用程式、換書籤與 App QR Code、第二階段（Code.gs `cfUser_`）。
+- **2026-11-05 改網址成 bmlearn.pages.dev**（使用者：「1+2 都做，3 改成 bmlearn.pages.dev」）：workflow `PROJECT: bmlearn`、`SITE_URL`；舊 `learn` 專案在 push／手動部署時換成 `_redirects` 轉到新網址同一路徑（`OLD_PROJECT`）；
+  舊網址 jenlin2002.github.io 由 `gh-redirect/`＋workflow「舊網址轉到新網站」（只手動執行，要先把 Pages Source 改成 GitHub Actions）發布轉址頁（index.html＝404.html，JS 轉到新網址同一路徑，sw.js 把舊 App 的 service worker 移除），5 個子站 repo 的 GitHub Pages 要關掉才會落到這個 404；
+  QR Code `app/install-qr.png`／`install-qr.svg`、`app/install.html` 已改成 `https://bmlearn.pages.dev/app/`（用 opencv 解碼驗證過）。**後台步驟（先加 Access 網址再 Push）在 `CLOUDFLARE-SETUP.md` 第七節，使用者還沒做。**
+- 還沒做：用孩子帳號實測測驗加點（BRANDEN 登入 OK；iPad 曾停在 Access 的 App Launcher 畫面）、圖示 Bypass 應用程式、各裝置換新網址與主畫面圖示、第二階段（Code.gs `cfUser_`）。
 
 - 使用者選定：學習網站跟股票網站一樣用 Cloudflare 保護（但兩邊完全分開），BRANDEN、MELISSA 用自己的 Google 帳號、家長用自己的 Gmail 登入，不再「選名字＋4 位數 PIN」。
-- 6 個 repo 由首頁 repo（jenlin2002.github.io）的 GitHub Actions「部署到 Cloudflare Pages」合成一個網站（Pages 專案 `learn`，路徑和 GitHub Pages 一樣），`functions/api/me.js` 用 Access 憑證＋`USER_MAP`（Cloudflare 變數，email 不放 repo）回傳登入者名字。
-- `points.js`（各站副本內容相同）：在 Cloudflare 網址打開時問 `/api/me`，自動設定 `quizStudentName`、不出現「你是誰？」關卡；第一階段每台裝置第一次只問一次自己的 PIN；第二階段（Code.gs 加 `cfUser_`、Cloudflare 設 `POINTS_SECRET`）點數改走 `/api/points`，不用 PIN。登出會連 Google 登入一起登出。在 jenlin2002.github.io 舊網址一切照舊。
+- 6 個 repo 由首頁 repo（jenlin2002.github.io）的 GitHub Actions「部署到 Cloudflare Pages」合成一個網站（Pages 專案 `bmlearn`，網址 **https://bmlearn.pages.dev**，路徑和 GitHub Pages 一樣；2026-11-05 從 learn-6td.pages.dev 改名，舊網址和 jenlin2002.github.io 都轉到這裡，後台步驟在首頁 repo `CLOUDFLARE-SETUP.md` 第七節），`functions/api/me.js` 用 Access 憑證＋`USER_MAP`（Cloudflare 變數，email 不放 repo）回傳登入者名字。
+- `points.js`（各站副本內容相同）：在 Cloudflare 網址打開時問 `/api/me`，自動設定 `quizStudentName`、不出現「你是誰？」關卡；第一階段每台裝置第一次只問一次自己的 PIN；第二階段（Code.gs 加 `cfUser_`、Cloudflare 設 `POINTS_SECRET`）點數改走 `/api/points`，不用 PIN。登出會連 Google 登入一起登出。在 jenlin2002.github.io 舊網址一切照舊（2026-11-05 起舊網址改成轉到 bmlearn.pages.dev，使用者接受不再用舊 PIN 版）。
 - 後台設定步驟、測試方法、第二階段 Code.gs 改法都在首頁 repo 的 `CLOUDFLARE-SETUP.md`。密碼、金鑰一律使用者自己在 Cloudflare／GitHub／Google 後台輸入。
 - 之後新做的頁面照舊用相對路徑；子站寫死的 `https://jenlin2002.github.io/` 部署時會自動改成 `/`。Cloudflare Pages 單檔上限 25 MB、整站 20000 個檔（2026-11-04 約 15300 個），大檔自動轉到 GitHub 原始檔。
 ## 使用者與工作方式（四個 repo 共用同一段，2026-10-13）
