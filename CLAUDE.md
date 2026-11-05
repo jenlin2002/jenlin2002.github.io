@@ -7,7 +7,8 @@
 - **2026-11-05 改網址成 bmlearn.pages.dev**（使用者：「1+2 都做，3 改成 bmlearn.pages.dev」）：workflow `PROJECT: bmlearn`、`SITE_URL`；舊 `learn` 專案在 push／手動部署時換成 `_redirects` 轉到新網址同一路徑（`OLD_PROJECT`）；
   舊網址 jenlin2002.github.io 由 `gh-redirect/`＋workflow「舊網址轉到新網站」（只手動執行，要先把 Pages Source 改成 GitHub Actions）發布轉址頁（index.html＝404.html，JS 轉到新網址同一路徑，sw.js 把舊 App 的 service worker 移除），5 個子站 repo 的 GitHub Pages 要關掉才會落到這個 404；
   QR Code `app/install-qr.png`／`install-qr.svg`、`app/install.html` 已改成 `https://bmlearn.pages.dev/app/`（用 opencv 解碼驗證過）。**後台步驟（先加 Access 網址再 Push）在 `CLOUDFLARE-SETUP.md` 第七節，使用者還沒做。**
-- 還沒做：用孩子帳號實測測驗加點（BRANDEN 登入 OK；iPad 曾停在 Access 的 App Launcher 畫面）、圖示 Bypass 應用程式、各裝置換新網址與主畫面圖示、第二階段（Code.gs `cfUser_`）。
+- **2026-11-05 bmlearn.pages.dev 接通**：Access 加了 bmlearn 兩筆網址、bmlearn 三個變數設好（`ACCESS_AUD` 曾因名稱藏字元讀不到，刪掉貼上重建才好）；家長、BRANDEN、MELISSA 三個帳號都測試 OK（使用者回報「兩個都 OK 了」）。learn-6td 已變成轉址。
+- 還沒做：jenlin2002.github.io 轉址（Pages Source 改 GitHub Actions＋跑「舊網址轉到新網站」、5 個子站 Pages 關掉）、各裝置換新主畫面圖示、圖示 Bypass 應用程式、第二階段（Code.gs `cfUser_`）。
 
 - 使用者選定：學習網站跟股票網站一樣用 Cloudflare 保護（但兩邊完全分開），BRANDEN、MELISSA 用自己的 Google 帳號、家長用自己的 Gmail 登入，不再「選名字＋4 位數 PIN」。
 - 6 個 repo 由首頁 repo（jenlin2002.github.io）的 GitHub Actions「部署到 Cloudflare Pages」合成一個網站（Pages 專案 `bmlearn`，網址 **https://bmlearn.pages.dev**，路徑和 GitHub Pages 一樣；2026-11-05 從 learn-6td.pages.dev 改名，舊網址和 jenlin2002.github.io 都轉到這裡，後台步驟在首頁 repo `CLOUDFLARE-SETUP.md` 第七節），`functions/api/me.js` 用 Access 憑證＋`USER_MAP`（Cloudflare 變數，email 不放 repo）回傳登入者名字。
