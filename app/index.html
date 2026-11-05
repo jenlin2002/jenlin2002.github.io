@@ -74,9 +74,14 @@
     <div id="howAndroid"><b>Android：</b>用 Chrome 打開這一頁 → 右上角「⋮」→「安裝應用程式」或「加到主畫面」。</div>
     <button type="button" id="installBtn" hidden>立即安裝</button>
     <div style="margin-top:8px;font-size:12.5px;color:var(--muted)">加到主畫面後，打開會是全螢幕。第一次打開要在 App 裡重新登入一次。</div>
+    <div id="qrDesk" hidden style="margin-top:14px;text-align:center">
+      <img src="/app/install-qr.png" alt="QR Code：bmlearn.pages.dev/app/" style="width:200px;height:200px;background:#fff;border-radius:12px;padding:8px">
+      <div style="margin-top:6px"><b>📷 用 iPad／手機相機掃這個 QR Code</b>，就會打開這個 App。</div>
+      <div style="font-size:12.5px;color:var(--muted)">要印出來或看完整步驟：<a href="/app/install.html" style="color:var(--yellow)">安裝說明頁</a></div>
+    </div>
   </div>
 
-  <div class="foot">BRANDEN、MELISSA 用自己的 PIN 登入，學習得到的點數可以換電腦時間或零用錢。<br><a href="/">網站首頁（全部子網站）</a></div>
+  <div class="foot">BRANDEN、MELISSA 用自己的 Google 帳號登入，學習得到的點數可以換電腦時間或零用錢。<br><a href="/">網站首頁（全部子網站）</a></div>
 </div>
 
 <script src="/points.js"></script>
@@ -89,6 +94,7 @@
   var ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   if (ios) document.getElementById('howAndroid').hidden = true;
   else if (/Android/.test(ua)) document.getElementById('howIos').hidden = true;
+  else document.getElementById('qrDesk').hidden = false;   // 電腦：顯示 QR Code 給 iPad／手機掃（2026-11-05）
   var deferred = null, btn = document.getElementById('installBtn');
   window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferred = e; btn.hidden = false; });
   btn.addEventListener('click', function () { if (!deferred) return; deferred.prompt(); deferred.userChoice.then(function () { deferred = null; btn.hidden = true; }); });
