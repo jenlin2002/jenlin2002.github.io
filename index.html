@@ -95,7 +95,12 @@
 <body>
 <header>
   <div class="top-right"><div id="ptsHome"></div>
-  <a class="app-btn" href="/app/" title="安裝 B&amp;M 學習 App：英文測驗系統＋美式生活館一個入口，可以加到手機主畫面"><img src="/app/icon-192.png" alt="">安裝 App</a></div>
+  <a class="app-btn" id="appBtn" href="/app/" title="安裝 B&amp;M 學習 App：英文測驗系統＋美式生活館一個入口，可以加到手機主畫面"><img src="/app/icon-192.png" alt="">安裝 App</a></div>
+  <script>
+    // 電腦按「安裝 App」→ 顯示 QR Code 安裝說明（給 iPad／手機掃）；手機、平板 → App 入口頁直接加入主畫面（2026-11-05）
+    (function () { var mobile = /Android|iPhone|iPad|iPod/.test(navigator.userAgent) || navigator.maxTouchPoints > 1;
+      if (!mobile) document.getElementById('appBtn').href = '/app/install.html'; })();
+  </script>
   <div class="eyebrow">GROWING UP WITH ENGLISH</div>
   <h1>BRANDEN &amp; MELISSA 成長學習館</h1>
   <div class="sub">所有自製英文學習網站的入口，點卡片進入各個子網站</div>
