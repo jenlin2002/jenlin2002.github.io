@@ -8,6 +8,7 @@
   舊網址 jenlin2002.github.io 由 `gh-redirect/`＋workflow「舊網址轉到新網站」（只手動執行，要先把 Pages Source 改成 GitHub Actions）發布轉址頁（index.html＝404.html，JS 轉到新網址同一路徑，sw.js 把舊 App 的 service worker 移除），5 個子站 repo 的 GitHub Pages 要關掉才會落到這個 404；
   QR Code `app/install-qr.png`／`install-qr.svg`、`app/install.html` 已改成 `https://bmlearn.pages.dev/app/`（用 opencv 解碼驗證過）。**後台步驟（先加 Access 網址再 Push）在 `CLOUDFLARE-SETUP.md` 第七節，使用者還沒做。**
 - **2026-11-05 bmlearn.pages.dev 接通**：Access 加了 bmlearn 兩筆網址、bmlearn 三個變數設好（`ACCESS_AUD` 曾因名稱藏字元讀不到，刪掉貼上重建才好）；家長、BRANDEN、MELISSA 三個帳號都測試 OK（使用者回報「兩個都 OK 了」）。learn-6td 已變成轉址。
+- **之後要做：5 個子站改 Private（2026-11-05 使用者同意，版權考量）**：GitHub 上 Public repo 任何人都能看到教材，exam-bank 有出版社考卷、聽力 zip、社會 PDF，風險最高。順序：①先完成舊網址轉址 ②使用者產生 `REPOS_TOKEN`（可讀 5 個 repo 的 fine-grained token）貼到首頁 repo Secrets、Claude 把 >24MB 大檔改放 Cloudflare R2（現在是 `_redirects` 轉 raw.githubusercontent.com，Private 後會失效）③確認部署正常再把 5 個子站改 Private。**首頁 repo 維持 Public**（GitHub Pages 轉址免費版需要 Public；部署 workflow 在這裡跑，Public 不耗 Actions 時數）；`stock`、`stock-dashboard` 不動。
 - 還沒做：jenlin2002.github.io 轉址（Pages Source 改 GitHub Actions＋跑「舊網址轉到新網站」、5 個子站 Pages 關掉）、各裝置換新主畫面圖示、圖示 Bypass 應用程式、第二階段（Code.gs `cfUser_`）。
 
 - 使用者選定：學習網站跟股票網站一樣用 Cloudflare 保護（但兩邊完全分開），BRANDEN、MELISSA 用自己的 Google 帳號、家長用自己的 Gmail 登入，不再「選名字＋4 位數 PIN」。
