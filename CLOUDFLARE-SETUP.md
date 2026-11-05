@@ -108,6 +108,7 @@
 3. `bmlearn` → Settings → Variables and Secrets（Production）新增，值和 `learn` 專案一樣（自己輸入／複製）：
    `ACCESS_TEAM`（Text）、`ACCESS_AUD`（Text）、`USER_MAP`（Secret，重新打一次 email=名字）；第二階段做了的話再加 `POINTS_URL`、`POINTS_SECRET`。
 4. GitHub → Actions →「部署到 Cloudflare Pages」→ Run workflow（變數要重新部署才生效）。
+   2026-11-05 實際遇到：畫面上 `ACCESS_AUD` 看起來對，但 `/api/aud` 一直 `set:false`（名稱可能藏了空格或全形字）；刪掉那一列、名稱和值都用**貼上**重建，再 Run workflow 就好了。`/api/aud` 的 `set` 就是用來查這個的。
 5. 測試：新的無痕視窗開 `https://bmlearn.pages.dev/api/me` → 看到 `"name":"PARENT"`；再開首頁、做一份測驗。
    開 `https://learn-6td.pages.dev/english-quiz/` → 應該自動跳到 `https://bmlearn.pages.dev/english-quiz/`。
 6. 舊網址 jenlin2002.github.io 轉過去（5 確認沒問題後再做）：
