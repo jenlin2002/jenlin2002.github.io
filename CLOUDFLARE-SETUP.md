@@ -118,3 +118,18 @@
    - repo 維持 Public（Cloudflare 部署要讀、段考題庫大檔從 GitHub 原始檔下載）。
 7. iPad／手機：刪掉主畫面舊的「B&M 學習」圖示 → 印出或打開 `app/install.html`（QR Code 指向 `https://bmlearn.pages.dev/app/`）→ 用相機掃 → Google 登入 → 加入主畫面。
 8. 過幾週確定沒人用舊 Cloudflare 網址後：Cloudflare 刪掉 `learn` 專案、Access 刪掉 learn-6td 兩筆網址，workflow 裡 `OLD_PROJECT` 那行和「舊網址轉址」步驟一起刪。
+## 八、子站改 Private（2026-11-05 規劃，先做 exam-bank）
+
+為什麼：Public repo 任何人不用登入就能從 GitHub 下載檔案；exam-bank 的 `PDF-RAW-DATA/` 有出版社聽力 zip、社會 PDF（版權）。
+程式已改好：大檔（>24 MB）的 `_redirects` 改轉到 `/api/big`（`functions/api/big.js`）；有 Cloudflare 變數 `REPOS_TOKEN` 時從 GitHub API 讀（Private 也行、只給登入的人），沒有時照舊轉 GitHub 原始檔。
+
+1. 產生金鑰：GitHub 右上頭像 → Settings → Developer settings → Personal access tokens → **Fine-grained tokens** → Generate new token
+   - Token name：`bmlearn-deploy`；Expiration：選最長（到期前要重做一把、兩個地方重貼）
+   - Repository access：**Only select repositories** → 勾 english-quiz、daily_life_listening、vocab-king、nat-geo-reading、exam-bank（**不要勾 stock、stock-dashboard**）
+   - Permissions → Repository permissions → **Contents：Read-only**（Metadata 會自動 Read-only）→ Generate token → 複製（只顯示一次）
+2. 貼到兩個地方（同一把）：
+   - GitHub → jenlin2002.github.io → Settings → Secrets and variables → Actions → New repository secret：`REPOS_TOKEN`
+   - Cloudflare → Workers & Pages → bmlearn → Settings → Variables and Secrets → Add：類型 **Secret**、名稱 `REPOS_TOKEN`（名稱用貼上的）
+3. Run workflow「部署到 Cloudflare Pages」→ 測試段考題庫的大檔（聽力 zip、社會 PDF）打得開。
+4. exam-bank → Settings → General → 最下面 Danger Zone → **Change visibility → Make private**。
+5. 再 Run workflow 一次 → 網站、段考題庫、大檔都再測一次。其他 4 個子站之後同樣做第 4、5 步。

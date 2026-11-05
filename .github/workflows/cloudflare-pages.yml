@@ -78,13 +78,12 @@ jobs:
             rsync -a --exclude '.git' --exclude '.github' --exclude '.claude' --exclude 'CLAUDE.md' --exclude '/tools/' "tmp/$r/" "dist/$r/"
           done
           # Cloudflare Pages 單一檔案上限 25 MiB（段考題庫的聽力 zip、社會 PDF 超過）：
-          # 拿掉這些檔，改用 _redirects 轉到 GitHub 原始檔（raw.githubusercontent.com，repo 要是 Public）
+          # 拿掉這些檔，改用 _redirects 轉到 /api/big（functions/api/big.js：有 Cloudflare 變數 REPOS_TOKEN 時從 GitHub API 讀，repo 是 Private 也行）
           : > dist/_redirects
           find dist -type f -size +24M -print0 | while IFS= read -r -d '' f; do
-            rel="${f#dist/}"; repo="${rel%%/*}"; inner="${rel#*/}"
+            rel="${f#dist/}"
             enc=$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$rel")
-            encin=$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$inner")
-            echo "/$enc https://raw.githubusercontent.com/jenlin2002/$repo/main/$encin 302" >> dist/_redirects
+            echo "/$enc /api/big?p=$enc 302" >> dist/_redirects
             rm "$f"; echo "大檔改轉址：$rel"
           done
           echo "檔案數：$(find dist -type f | wc -l)（Cloudflare Pages 上限 20000）"
