@@ -33,6 +33,9 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@v4
+        with:
+          # 不留 checkout 的 GITHUB_TOKEN 在 git 設定裡：不然 git 會優先用它（只能讀這個 repo），Private 子站就讀不到（2026-11-06）
+          persist-credentials: false
 
       - name: 準備
         run: |
