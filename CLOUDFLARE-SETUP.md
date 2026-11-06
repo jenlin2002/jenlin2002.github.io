@@ -133,3 +133,7 @@
 3. Run workflow「部署到 Cloudflare Pages」→ 測試段考題庫的大檔（聽力 zip、社會 PDF）打得開。
 4. exam-bank → Settings → General → 最下面 Danger Zone → **Change visibility → Make private**。
 5. 再 Run workflow 一次 → 網站、段考題庫、大檔都再測一次。其他 4 個子站之後同樣做第 4、5 步。
+
+**2026-11-06 進度：exam-bank 已改 Private ✅**（GitHub 頁面、原始檔對外都 404；部署 #28 成功；bmlearn 上段考題庫頁面、聽力 zip、社會 PDF 經 `/api/big` 都 200，大小正確）。
+- 遇到的問題：workflow 的 `actions/checkout` 預設把 GITHUB_TOKEN 留在 git 設定，git 讀子站時優先用它（只能讀首頁 repo）→ Private 子站「Repository not found」。已加 `persist-credentials: false`。
+- 「準備」步驟會印出 `REPOS_TOKEN` 對 5 個子站的 GitHub 回應碼（200＝讀得到、401＝金鑰無效、404＝金鑰沒勾這個 repo），出問題先看這裡。
