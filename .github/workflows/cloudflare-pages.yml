@@ -38,9 +38,22 @@ jobs:
         run: |
           # src <repo>：子站 repo 的 clone 網址（有 REPOS_TOKEN 就帶上，Private repo 才讀得到）
           cat > "$RUNNER_TEMP/src.sh" <<'EOF'
-          src() { if [ -n "$REPOS_TOKEN" ]; then echo "https://x-access-token:${REPOS_TOKEN}@github.com/jenlin2002/$1.git"; else echo "https://github.com/jenlin2002/$1.git"; fi; }
+          src() { local t; t="$(printf %s "$REPOS_TOKEN" | tr -d '\r\n ')"; if [ -n "$t" ]; then echo "https://x-access-token:${t}@github.com/jenlin2002/$1.git"; else echo "https://github.com/jenlin2002/$1.git"; fi; }
           EOF
           echo "BASH_ENV=$RUNNER_TEMP/src.sh" >> "$GITHUB_ENV"
+          # 檢查 REPOS_TOKEN（只印長度、開頭格式、GitHub 回應碼，不印金鑰本身）
+          if [ -n "$REPOS_TOKEN" ]; then
+            t="$(printf %s "$REPOS_TOKEN" | tr -d '\r\n ')"
+            echo "::add-mask::$t"
+            case "$t" in github_pat_*) fmt=fine-grained;; ghp_*) fmt=classic;; *) fmt=格式不對;; esac
+            echo "REPOS_TOKEN：長度 ${#REPOS_TOKEN}（去空白後 ${#t}），$fmt"
+            for r in $SUBSITES; do
+              code=$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $t" "https://api.github.com/repos/jenlin2002/$r")
+              echo "  $r：GitHub 回應 $code（200＝讀得到，401＝金鑰無效或已刪除，404＝金鑰沒有這個 repo 的權限）"
+            done
+          else
+            echo "REPOS_TOKEN 是空的（GitHub → Settings → Secrets and variables → Actions 沒設好）"
+          fi
 
       - name: 檢查子站有沒有新的 commit
         id: check
