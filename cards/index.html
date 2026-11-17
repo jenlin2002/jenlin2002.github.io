@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>我的字卡｜成長學習館</title>
+<link rel="icon" href="/app/icon-192.png">
+<style>
+  :root{ --bg:#F7F3E8; --card:#fffdf6; --ink:#1b3a2f; --soft:#6b6350; --line:#e2d8bf; --gold:#e8b94a; --ok:#2e7d4f; --bad:#c0392b; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif; }
+  .wrap{ max-width:1080px; margin:0 auto; padding:16px 16px 100px; }
+  a{ color:#2f6fb5; }
+  .crumb{ font-size:14px; } .crumb a{ text-decoration:none; color:var(--soft); }
+  h1{ margin:6px 0 2px; font-size:28px; }
+  #who{ font-size:13px; color:var(--soft); margin-bottom:12px; }
+  .box{ background:#efe6cf; border:1.5px solid var(--line); border-radius:18px; padding:10px 12px; margin:10px 0; }
+  .lbl{ font-size:12px; font-weight:800; color:#a07a2c; letter-spacing:.1em; margin:0 2px 6px; }
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{ border:1.5px solid var(--line); background:var(--card); border-radius:999px; padding:6px 13px; font:700 14px inherit; font-family:inherit; color:var(--ink); cursor:pointer; }
+  .chip small{ color:var(--soft); font-weight:600; margin-left:4px; }
+  .chip.on{ background:var(--ink); border-color:var(--ink); color:#fff; } .chip.on small{ color:#cfe0d1; }
+  .chip.add{ border-style:dashed; color:var(--soft); }
+  .tool{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:8px 0 0; font-size:13px; color:var(--soft); }
+  .tool button{ border:1.5px solid var(--line); background:#fff; border-radius:10px; padding:5px 10px; font:700 13px inherit; font-family:inherit; cursor:pointer; color:var(--ink); }
+  .tool button.danger{ color:var(--bad); border-color:#e3a99f; }
+  .tabs .chip{ font-size:15px; padding:8px 16px; }
+  .msg{ padding:14px; border-radius:14px; background:#fff4dc; border:1.5px solid #e7c98a; color:#6b4a12; margin:12px 0; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; margin-top:12px; }
+  .cd{ position:relative; background:var(--card); border:1.5px solid var(--line); border-radius:16px; overflow:hidden; display:flex; flex-direction:column; }
+  .cd.sel{ border-color:var(--gold); box-shadow:0 0 0 3px var(--gold); }
+  .cd .im{ aspect-ratio:4/3; background:#efe9d8; display:flex; align-items:center; justify-content:center; font-size:46px; font-weight:900; color:#cbbd94; }
+  .cd .im img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .cd .bd{ padding:8px 10px 10px; flex:1; }
+  .cd .en{ font-size:19px; font-weight:800; } .cd .pos{ font-size:12px; color:var(--soft); margin-left:4px; }
+  .cd .zh{ font-size:15px; } .cd .ex{ font-size:13px; color:var(--soft); margin-top:4px; }
+  .cd .meta{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; font-size:11.5px; }
+  .tag{ border-radius:999px; padding:1px 8px; background:#efe6cf; color:#6b5530; font-weight:700; }
+  .tag.k{ background:#e3f2e8; color:var(--ok); } .tag.w{ background:#f8dedb; color:var(--bad); }
+  .cd .ck{ position:absolute; left:8px; top:8px; width:26px; height:26px; border-radius:8px; border:2px solid #fff; background:rgba(0,0,0,.25); color:#fff; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .cd.sel .ck{ background:var(--gold); color:var(--ink); }
+  .sp{ border:0; background:var(--gold); border-radius:999px; width:32px; height:32px; font-size:15px; cursor:pointer; vertical-align:middle; }
+  /* 翻卡 */
+  .flip{ max-width:520px; margin:16px auto 0; }
+  .fc{ background:var(--card); border:2px solid var(--line); border-radius:22px; min-height:360px; padding:16px; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; box-shadow:0 6px 18px rgba(0,0,0,.08); }
+  .fc img{ width:100%; max-width:360px; aspect-ratio:4/3; object-fit:cover; border-radius:14px; }
+  .fc .en{ font-size:34px; font-weight:900; } .fc .zh{ font-size:26px; font-weight:800; } .fc .ex{ color:var(--soft); }
+  .fc .hint{ font-size:13px; color:var(--soft); }
+  .fbtns{ display:flex; gap:10px; justify-content:center; margin-top:14px; flex-wrap:wrap; }
+  .fbtns button{ border:0; border-radius:14px; padding:12px 20px; font:800 16px inherit; font-family:inherit; cursor:pointer; }
+  .b-no{ background:#f8dedb; color:var(--bad); } .b-yes{ background:#dff2e5; color:var(--ok); } .b-nav{ background:#fff; border:1.5px solid var(--line)!important; color:var(--ink); }
+  /* 小測驗 */
+  .q{ background:var(--card); border:1.5px solid var(--line); border-radius:16px; padding:12px 14px; margin:12px 0; }
+  .q .qt{ font-size:17px; font-weight:700; } .q img{ width:150px; aspect-ratio:4/3; object-fit:cover; border-radius:10px; vertical-align:middle; margin-right:8px; }
+  .opts{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+  @media(max-width:520px){ .opts{ grid-template-columns:1fr; } }
+  .opt{ display:block; border:1.5px solid var(--line); background:#fff; border-radius:12px; padding:9px 12px; cursor:pointer; }
+  .opt input{ margin-right:6px; } .opt.correct{ border-color:var(--ok); background:#dff2e5; } .opt.wrong{ border-color:var(--bad); background:#f8dedb; }
+  input.sp-in{ font-size:18px; padding:8px 12px; border:1.5px solid var(--line); border-radius:12px; width:min(320px,100%); margin-top:8px; }
+  input.sp-in.correct{ border-color:var(--ok); background:#dff2e5; } input.sp-in.wrong{ border-color:var(--bad); background:#f8dedb; }
+  .go{ background:var(--ink); color:#fff; border:0; border-radius:12px; padding:12px 24px; font:800 17px inherit; font-family:inherit; cursor:pointer; }
+  .go:disabled{ opacity:.55; cursor:not-allowed; }
+  /* 印出：每張卡一列，左邊正面（圖＋英文）、右邊背面（中文＋例句），沿中線對摺再剪 */
+  .pr{ display:grid; grid-template-columns:1fr 1fr; gap:0; margin-top:12px; background:#fff; }
+  .pr .f, .pr .b{ border:1px dashed #999; padding:10px; min-height:150px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; break-inside:avoid; }
+  .pr .f img{ width:120px; aspect-ratio:4/3; object-fit:cover; border-radius:8px; }
+  .pr .f .en{ font-size:24px; font-weight:900; } .pr .b .zh{ font-size:22px; font-weight:800; } .pr .b .ex{ font-size:13px; color:#555; }
+  @media print{
+    body{ background:#fff; } .noprint, .pts-pill, .pts-banner{ display:none !important; } .wrap{ padding:0; max-width:none; }
+    .pr{ margin:0; } .pr .f, .pr .b{ min-height:3.4cm; page-break-inside:avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="crumb noprint"><a href="/">← 成長學習館</a></div>
+  <h1 class="noprint">📇 我的字卡</h1>
+  <div id="who" class="noprint"></div>
+  <div class="box noprint"><div class="lbl">分類</div><div class="chips" id="decks"></div><div class="tool" id="deckTool"></div></div>
+  <div class="box noprint"><div class="lbl">功能</div><div class="chips tabs" id="tabs"></div></div>
+  <div id="view"></div>
+</div>
+<script src="/points.js?v=20261117a"></script>
+<script src="/cards/cards.js?v=20261117a"></script>
+<script src="/cards/fixkit.js?v=20261117a"></script>
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); }, esc = Cards.esc;
+  var SYNC_URL = 'https://script.google.com/macros/s/AKfycbwqd9cr_3MfXK8hzs8Y-YPQQUqOH5vKtW_vMav1nMAAt9VkBCP_5WP6Q1TDngIlr51U/exec';   // 和英文測驗系統同一份成績試算表
+  var ALL = '全部', deck = ALL, tab = 'list', sel = {}, flipI = 0, flipBack = false, flipOnlyNew = false, quizKit = null;
+  try { deck = localStorage.getItem('ckDeck') || ALL; } catch (e) {}
+
+  function cards() { return (Cards.state.list || []).slice().sort(function (a, b) { return String(b.updated).localeCompare(String(a.updated)); }); }
+  function inDeck() { return cards().filter(function (c) { return deck === ALL || c.deck === deck; }); }
+  function decks() {
+    var ds = (Cards.state.decks || []).slice();
+    cards().forEach(function (c) { if (ds.indexOf(c.deck) < 0) ds.push(c.deck); });
+    ds.sort(function (a, b) { return (a === Cards.WRONG ? -1 : b === Cards.WRONG ? 1 : 0) || (a === Cards.DEFAULT ? -1 : b === Cards.DEFAULT ? 1 : 0); });
+    return ds;
+  }
+  function speak(c) {
+    if (c.audio) { var a = new Audio(c.audio); a.play().catch(function () { tts(c.en); }); return; }
+    tts(c.en);
+  }
+  function tts(t) {   // 沒有語音引擎的裝置（例如華為平板）就不出聲
+    try { if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return; speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(t); u.lang = 'en-US'; u.rate = 0.9; speechSynthesis.speak(u); } catch (e) {}
+  }
+  function pic(c, cls) { return c.img ? '<img src="' + esc(c.img) + '" alt="" loading="lazy" onerror="this.remove()">' : ''; }
+
+  // ---- 分類列 ----
+  function drawDecks() {
+    var all = cards(), n = function (d) { return all.filter(function (c) { return c.deck === d; }).length; };
+    if (deck !== ALL && decks().indexOf(deck) < 0) deck = ALL;
+    $('#decks').innerHTML = '<button class="chip' + (deck === ALL ? ' on' : '') + '" data-deck="' + ALL + '">全部<small>' + all.length + '</small></button>' +
+      decks().map(function (d) { return '<button class="chip' + (deck === d ? ' on' : '') + '" data-deck="' + esc(d) + '">' + (d === Cards.WRONG ? '❌ ' : '') + esc(d) + '<small>' + n(d) + '</small></button>'; }).join('') +
+      '<button class="chip add" data-act="newdeck">＋ 新分類</button>';
+    $('#deckTool').innerHTML = deck === ALL ? '' : '<span>「' + esc(deck) + '」：</span><button data-act="rename">改名</button><button class="danger" data-act="deldeck">刪除分類</button>';
+  }
+  function drawTabs() {
+    var t = [['list', '🗂️ 字卡'], ['flip', '🔄 翻卡複習'], ['quiz', '✏️ 小測驗'], ['print', '🖨️ 印出']];
+    $('#tabs').innerHTML = t.map(function (x) { return '<button class="chip' + (tab === x[0] ? ' on' : '') + '" data-tab="' + x[0] + '">' + x[1] + '</button>'; }).join('');
+  }
+  function render() {
+    try { localStorage.setItem('ckDeck', deck); } catch (e) {}
+    drawDecks(); drawTabs();
+    if (tab === 'list') return drawList();
+    if (tab === 'flip') return drawFlip();
+    if (tab === 'quiz') return drawQuiz();
+    drawPrint();
+  }
+
+  // ---- 字卡列表：選取、移動、刪除、標記 ----
+  function drawList() {
+    var list = inDeck(), ids = Object.keys(sel).filter(function (k) { return sel[k]; });
+    if (!list.length) { $('#view').innerHTML = '<div class="msg">' + (cards().length ? '這個分類還沒有字卡。' : '還沒有字卡。在<a href="/vocab-king/">圖解單字</a>、英文測驗系統、國家地理閱讀、美式生活館看到不熟的字，按「☆」就能存進來；測驗答錯的字會自動放進「錯題」。') + '</div>'; return; }
+    var opts = decks().map(function (d) { return '<option>' + esc(d) + '</option>'; }).join('');
+    $('#view').innerHTML = '<div class="tool noprint">' + (ids.length ? '已選 ' + ids.length + ' 張：<select id="mv"><option value="">移到分類…</option>' + opts + '<option value="__new">＋ 新分類…</option></select>' +
+      '<button data-act="known">標成會了</button><button data-act="learning">標成還不會</button><button class="danger" data-act="del">刪除</button><button data-act="clear">取消選取</button>'
+      : '點卡片左上角的方框可以多選，再移到別的分類或刪除。') + '<button data-act="selall" style="margin-left:auto">全選</button></div>' +
+      '<div class="grid">' + list.map(function (c) {
+        return '<div class="cd' + (sel[c.id] ? ' sel' : '') + '"><button class="ck" data-sel="' + esc(c.id) + '" aria-label="選取">' + (sel[c.id] ? '✓' : '') + '</button>' +
+          '<div class="im">' + (c.img ? pic(c) : esc(c.en.charAt(0).toUpperCase())) + '</div>' +
+          '<div class="bd"><div><span class="en">' + esc(c.en) + '</span><span class="pos">' + esc(c.pos) + '</span> <button class="sp" data-say="' + esc(c.id) + '">🔊</button></div>' +
+          '<div class="zh">' + esc(c.zh) + '</div>' + (c.ex ? '<div class="ex">' + esc(c.ex) + (c.exzh ? '<br>' + esc(c.exzh) : '') + '</div>' : '') +
+          '<div class="meta"><span class="tag">' + esc(c.deck) + '</span>' + (c.status === 'known' ? '<span class="tag k">✓ 會了</span>' : '') + (c.wrong ? '<span class="tag w">錯 ' + c.wrong + ' 次</span>' : '') +
+          (c.src ? (c.url ? '<a class="tag" href="' + esc(c.url) + '">' + esc(c.src) + '</a>' : '<span class="tag">' + esc(c.src) + '</span>') : '') + '</div></div></div>';
+      }).join('') + '</div>';
+  }
+
+  // ---- 翻卡複習 ----
+  function flipList() { return inDeck().filter(function (c) { return !flipOnlyNew || c.status !== 'known'; }); }
+  function drawFlip() {
+    var L = flipList();
+    var head = '<div class="tool noprint"><button data-act="flipmode">' + (flipOnlyNew ? '只看還不會的 ✓' : '只看還不會的') + '</button><button data-act="shuffle">🔀 洗牌</button><span>點卡片翻面；按「會了／還不會」記下來，下次可以只複習還不會的。</span></div>';
+    if (!L.length) { $('#view').innerHTML = head + '<div class="msg">' + (flipOnlyNew ? '這個分類的字卡都會了，太棒了！' : '這個分類還沒有字卡。') + '</div>'; return; }
+    if (flipI >= L.length) flipI = 0;
+    var c = L[flipI];
+    $('#view').innerHTML = head + '<div class="flip"><div class="fc" id="fc">' +
+      (flipBack ? '<div class="zh">' + esc(c.zh || '（沒有中文）') + '</div><div class="en" style="font-size:22px">' + esc(c.en) + ' <span class="pos" style="font-size:14px;color:var(--soft)">' + esc(c.pos) + '</span></div>' +
+        (c.ex ? '<div class="ex">' + esc(c.ex) + (c.exzh ? '<br>' + esc(c.exzh) : '') + '</div>' : '') + '<div class="hint">再點一次翻回正面</div>'
+      : pic(c) + '<div class="en">' + esc(c.en) + '</div><div class="hint">想想中文是什麼？點卡片翻面</div>') +
+      '</div><div class="fbtns"><button class="b-nav" data-act="prev">◀</button><button class="sp" data-say="' + esc(c.id) + '" style="width:48px;height:48px;font-size:20px">🔊</button>' +
+      '<button class="b-no" data-act="no">還不會</button><button class="b-yes" data-act="yes">會了 ✓</button><button class="b-nav" data-act="next">▶</button></div>' +
+      '<div style="text-align:center;color:var(--soft);font-size:13px;margin-top:8px">第 ' + (flipI + 1) + ' / ' + L.length + ' 張</div></div>';
+  }
+
+  // ---- 小測驗（照段考題庫規則：fixkit.js）----
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawQuiz() {
+    var pool = inDeck().filter(function (c) { return c.zh; });
+    if (pool.length < 4) { $('#view').innerHTML = '<div class="msg">這個分類有中文的字卡要 4 張以上才能出題（現在 ' + pool.length + ' 張）。</div>'; return; }
+    var qs = shuffle(pool).slice(0, 10).map(function (c, i) {
+      if (i % 2 === 0) return { c: c, kind: 'mc', opts: shuffle([c].concat(shuffle(pool.filter(function (x) { return x !== c; })).slice(0, 3))).map(function (x) { return x.en; }) };
+      return { c: c, kind: 'spell' };
+    });
+    var name = deck === ALL ? '全部字卡' : deck;
+    $('#view').innerHTML = '<div id="qhost"></div><div id="qbox">' + qs.map(function (q, i) {
+      var c = q.c, head = '<div class="qt">' + (i + 1) + '. ' + (c.img ? '<img src="' + esc(c.img) + '" alt="" onerror="this.remove()">' : '') + esc(c.zh) + (q.kind === 'mc' ? '　選出英文' : '　拼出英文（共 ' + c.en.replace(/[^A-Za-z]/g, '').length + ' 個字母）') + '</div>';
+      return '<div class="q" id="q' + i + '">' + head + (q.kind === 'mc'
+        ? '<div class="opts">' + q.opts.map(function (o, j) { return '<label class="opt"><input type="radio" name="cq' + i + '" value="' + esc(o) + '">' + esc(o) + '</label>'; }).join('') + '</div>'
+        : '<input class="sp-in" data-i="' + i + '" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="輸入英文">') + '</div>';
+    }).join('') + '</div><div style="margin:16px 0"><button class="go" id="qgo">送出成績</button></div>';
+    var norm = function (s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
+    var items = function () {
+      return qs.map(function (q, i) {
+        var el = document.getElementById('q' + i), c = q.c;
+        if (q.kind === 'mc') {
+          var radios = function () { return Array.prototype.slice.call(el.querySelectorAll('input[type=radio]')); };
+          var val = function () { var r = radios().filter(function (x) { return x.checked; })[0]; return r ? r.value : ''; };
+          return { el: el, q: c.zh, correct: c.en, value: val, right: function () { return val() === c.en; },
+            clear: function () { radios().forEach(function (r) { r.checked = false; }); }, set: function (v) { radios().forEach(function (r) { r.checked = r.value === v; }); },
+            lock: function (on) { radios().forEach(function (r) { r.disabled = on; }); },
+            mark: function () { var v = val(); radios().forEach(function (r) { var lb = r.parentElement; lb.classList.remove('correct', 'wrong'); if (r.value === c.en) lb.classList.add('correct'); else if (r.value === v) lb.classList.add('wrong'); }); },
+            unmark: function () { radios().forEach(function (r) { r.parentElement.classList.remove('correct', 'wrong'); }); } };
+        }
+        var inp = el.querySelector('input');
+        var tip = function () { return inp.nextElementSibling && inp.nextElementSibling.classList.contains('fk-ans') ? inp.nextElementSibling : null; };
+        return { el: el, q: c.zh, correct: c.en, value: function () { return inp.value.trim(); }, right: function () { return norm(inp.value) === norm(c.en); },
+          clear: function () { inp.value = ''; }, set: function (v) { inp.value = v; }, lock: function (on) { inp.disabled = on; },
+          mark: function () { var ok = this.right(); inp.classList.toggle('correct', ok); inp.classList.toggle('wrong', !ok); if (!ok && !tip()) { var t = document.createElement('span'); t.className = 'fk-ans'; t.textContent = '→ ' + c.en; inp.insertAdjacentElement('afterend', t); } },
+          unmark: function () { inp.classList.remove('correct', 'wrong'); var t = tip(); if (t) t.remove(); } };
+      });
+    };
+    var label = 'Cards｜' + name;
+    quizKit = FixKit.make({
+      id: 'cards-' + name, name: '字卡小測驗', host: $('#qbox'), box: $('#qbox'), btn: $('#qgo'), items: items,
+      earn: { label: label, mode: '字卡測驗' }, back: '/cards/',
+      post: function (who, suffix, rows, score, total) {
+        return fetch(SYNC_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ name: who, week: label, mode: '字卡測驗' + suffix, score: score, total: total, percent: total ? Math.round(score / total * 100) : 0, details: rows }) }).catch(function () {});
+      },
+      onGraded: function (score, total) {
+        var wrong = qs.filter(function (q, i) { return !items()[i].right(); }).map(function (q) { var c = q.c; return { en: c.en, zh: c.zh, pos: c.pos, ex: c.ex, exzh: c.exzh, img: c.img, audio: c.audio, src: c.src, url: c.url }; });
+        if (wrong.length) Cards.addWrong(wrong).then(function () { drawDecks(); });
+      }
+    });
+  }
+
+  // ---- 印出 ----
+  function drawPrint() {
+    var list = inDeck();
+    $('#view').innerHTML = '<div class="tool noprint"><button data-act="print">🖨️ 列印</button><span>每張卡一列：左邊正面（圖＋英文）、右邊背面（中文＋例句）。印出來沿中間虛線對摺，再沿外框剪下。共 ' + list.length + ' 張。</span></div>' +
+      '<div class="pr">' + list.map(function (c) {
+        return '<div class="f">' + pic(c) + '<div class="en">' + esc(c.en) + '</div></div><div class="b"><div class="zh">' + esc(c.zh) + '</div>' + (c.pos ? '<div>' + esc(c.pos) + '</div>' : '') + (c.ex ? '<div class="ex">' + esc(c.ex) + (c.exzh ? '<br>' + esc(c.exzh) : '') + '</div>' : '') + '</div>';
+      }).join('') + '</div>';
+  }
+
+  // ---- 動作 ----
+  function act(p, done) {
+    return Cards.api(p).then(function () { return Cards.load(true); }).then(function () { if (done) done(); render(); }, function (e) { alert(Cards.errText(e)); });
+  }
+  function selIds() { return Object.keys(sel).filter(function (k) { return sel[k]; }); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('button, .fc'); if (!b) return;
+    if (b.dataset.deck) { deck = b.dataset.deck; sel = {}; flipI = 0; flipBack = false; return render(); }
+    if (b.dataset.tab) { if (quizKit && quizKit.pending) return alert('還有錯題沒訂正完，先訂正完才能換功能喔！'); tab = b.dataset.tab; flipI = 0; flipBack = false; return render(); }
+    if (b.dataset.sel) { sel[b.dataset.sel] = !sel[b.dataset.sel]; return drawList(); }
+    if (b.dataset.say) { var c = cards().filter(function (x) { return x.id === b.dataset.say; })[0]; if (c) speak(c); e.stopPropagation(); return; }
+    if (b.id === 'fc') { flipBack = !flipBack; return drawFlip(); }
+    var a = b.dataset.act; if (!a) return;
+    if (a === 'newdeck') { var d = prompt('新分類名稱（最多 20 個字）', ''); if (d && d.trim()) act({ action: 'deckadd', deck: d.trim() }, function () { deck = d.trim().slice(0, 20); }); }
+    else if (a === 'rename') { var to = prompt('「' + deck + '」改成：', deck); if (to && to.trim() && to.trim() !== deck) act({ action: 'deckrename', deck: deck, to: to.trim() }, function () { deck = to.trim().slice(0, 20); }); }
+    else if (a === 'deldeck') {
+      var cnt = inDeck().length;
+      if (!confirm('刪除分類「' + deck + '」？' + (cnt ? '\n裡面的 ' + cnt + ' 張字卡會移到「未分類」（不會刪掉）。' : ''))) return;
+      act({ action: 'deckdel', deck: deck }, function () { deck = ALL; });
+    }
+    else if (a === 'selall') { inDeck().forEach(function (c) { sel[c.id] = true; }); drawList(); }
+    else if (a === 'clear') { sel = {}; drawList(); }
+    else if (a === 'del') { var ids = selIds(); if (confirm('刪除選取的 ' + ids.length + ' 張字卡？')) act({ action: 'carddel', ids: ids.join(',') }, function () { sel = {}; }); }
+    else if (a === 'known' || a === 'learning') act({ action: 'cardstatus', ids: selIds().join(','), status: a }, function () { sel = {}; });
+    else if (a === 'flipmode') { flipOnlyNew = !flipOnlyNew; flipI = 0; flipBack = false; drawFlip(); }
+    else if (a === 'shuffle') { var L = flipList(); if (L.length) { flipI = Math.floor(Math.random() * L.length); flipBack = false; drawFlip(); } }
+    else if (a === 'prev' || a === 'next') { var n = flipList().length; flipI = (flipI + (a === 'next' ? 1 : n - 1)) % n; flipBack = false; drawFlip(); }
+    else if (a === 'yes' || a === 'no') {
+      var cur = flipList()[flipI]; if (!cur) return;
+      cur.status = a === 'yes' ? 'known' : 'learning';
+      Cards.api({ action: 'cardstatus', ids: cur.id, status: cur.status }).catch(function (er) { alert(Cards.errText(er)); });
+      if (!(flipOnlyNew && a === 'yes')) flipI++;
+      flipBack = false; drawFlip();
+    }
+    else if (a === 'print') window.print();
+  });
+  document.addEventListener('change', function (e) {
+    if (e.target.id !== 'mv' || !e.target.value) return;
+    var to = e.target.value;
+    if (to === '__new') { to = prompt('新分類名稱（最多 20 個字）', ''); if (!to || !to.trim()) { e.target.value = ''; return; } to = to.trim(); }
+    act({ action: 'cardmove', ids: selIds().join(','), deck: to }, function () { sel = {}; });
+  });
+
+  function start() {
+    var n = Cards.who();
+    $('#who').textContent = n ? '登入者：' + n + '（字卡存在你的帳號，手機、平板、電腦都看得到）' : '尚未登入';
+    if (!n) { $('#view').innerHTML = '<div class="msg">請先登入（回到<a href="/">成長學習館</a>選你的名字），才能看你的字卡。</div>'; drawTabs(); return; }
+    $('#view').innerHTML = '<div class="msg">讀取你的字卡中…</div>';
+    Cards.load(true).then(render, function (e) { $('#view').innerHTML = '<div class="msg">' + esc(Cards.errText(e)) + '</div>'; });
+  }
+  // 等 points.js 判斷完登入者（Cloudflare 網址會先問 /api/me）
+  var tries = 0; (function wait() { if ((window.Points && Cards.who()) || tries++ > 15) start(); else setTimeout(wait, 300); })();
+})();
+</script>
+</body>
+</html>

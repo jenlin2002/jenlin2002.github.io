@@ -847,6 +847,10 @@
       return d;
     }).catch(function () { toast('🪙 連不上點數系統，這次沒記到點數。'); return null; });
   }
+  // 給「我的字卡」（/cards/cards.js）用：同一套後端與登入憑證（2026-11-17）
+  API.call = call;
+  API.who = curName;
+  API.auth = function (name, why) { name = String(name || curName() || '').trim().toUpperCase(); return name ? ensureAuth(name, why || '輸入 PIN，才能使用你的字卡') : Promise.resolve(''); };
   API.earn = function (o) {
     o = o || {};
     var name = String(o.name || curName() || '').trim().toUpperCase();

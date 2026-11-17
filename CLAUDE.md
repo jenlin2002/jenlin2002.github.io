@@ -65,6 +65,14 @@
 - 各站的做法：段考題庫 `sync.js`；圖解單字 `topic.html`；國家地理閱讀 `fixkit.js`（`points-glue.js` 載入）；英文測驗系統 `eqfix.js`；美式生活館 `lifefix.js`（engine.js、index.html 用）。
   英文測驗系統、美式生活館是「一題一題做、答完看解說」的形式，使用者選擇保留，只把結果頁改成訂正規則（只重做錯題、直到全對）。
 
+## 我的字卡（2026-11-17 使用者要求，手機雲端版）
+
+- 登入者可以把單字／句子存成字卡、自己分類；字卡存在點數存摺同一份 Google 試算表的「字卡」「字卡分類」分頁（每人一份，手機、平板、電腦同步）。後端是 english-quiz-plan `points/Code.gs` 的 `cardlist／cardsave／carddel／cardmove／cardstatus／deckadd／deckrename／deckdel`（用存摺的登入憑證；同一人同一個英文只存一張；答錯再加入時「錯次」+1）。**要重新部署 Apps Script 才能用**，沒部署前按 ☆ 會提示「後端還沒更新」。
+- 全站共用前端 `/cards/cards.js`（首頁 repo）：`Cards.btn(card)` 產生「☆」按鈕（點了選分類／新分類存起來，已存的變 ★，可改分類或移除）；`Cards.addWrong([card…])` 把測驗答錯的字自動放進「錯題」。card 欄位：en、zh、pos、ex、exzh、img、audio（網站根目錄開頭的絕對路徑）、src（來源名稱）、url。需要 `points.js`（它開放了 `Points.call／Points.auth／Points.who` 給字卡用，7 份副本一致）。
+- 「我的字卡」頁 `/cards/`（首頁 repo；首頁右上角「📇 我的字卡」、App 入口頁都有連結）：分類（新增、改名、刪除→卡片移到未分類）、字卡列表（多選後移動、刪除、標會了／還不會）、🔄 翻卡複習（可只看還不會的）、✏️ 小測驗（看中文選英文＋拼字，照段考題庫規則用 `/cards/fixkit.js`：送出、對答案、訂正、補送 1 點、暫存；答錯的字再加進錯題；點數 label `Cards｜分類名`）、🖨️ 印出（左正面右背面，對摺剪下）。
+- 各站接法：圖解單字 `topic.html`（單字卡 ☆、三種測驗答錯自動加入）；英文測驗系統 `vocab/vocab.js`（國中2000字單字卡頁 ☆，會自動載入 points.js）、`grammar2/gquiz.js`（單字區測驗答錯自動加入）、`eqfix.js`（每週測驗的單字題 ☆、答錯自動加入）；國家地理閱讀 `points-glue.js`（Vocabulary 卡 ☆、克漏字答錯自動加入）；美式生活館 `engine.js`、`units.html`（場景單字、你要說的、你會聽到的句子 ☆）。段考題庫沒有接（題型不是單字卡）。
+- 這個 repo：`cards/cards.js`、`cards/index.html`、`cards/fixkit.js`（國家地理閱讀那份的副本）；`index.html` 右上角多「📇 我的字卡」、`points.js?v=20261117a`；`app/index.html` 多一張「我的字卡」、`sw.js` CACHE 改 `bm-app-v3`。
+
 ## 連續學習紅利＋稱讚畫面（2026-10-18）
 
 - 送出測驗後跳出稱讚卡（得幾點、連續第幾天、還差幾點到 100 點）；每跨過 100 點跳出大的恭喜兌換畫面。
