@@ -7,7 +7,7 @@
  * 載入方式：points.js 會自動載入這支；沒有 points.js 的頁面直接 <script src="/dict/dict.js?v=…" defer>。 */
 (function () {
   if (window.Dict) return;
-  var V = '20261118a', BASE = '/dict/';
+  var V = '20261118b', BASE = '/dict/';
   var shards = {}, popEl = null, chipEl = null, lastWord = '';
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -198,6 +198,8 @@
     '.dk-x{margin-left:auto;background:#fff;border-color:#ddd;color:#777}' +
     '.dk-lv{display:inline-block;padding:2px 9px;border-radius:999px;background:#e8f5ec;color:#1f6b3a;font:700 12px/1.6 system-ui,sans-serif}' +
     '.dk-bd{padding:2px 14px 10px}.dk-l{margin:3px 0}.dk-l b{color:#9a5b13;font-family:Georgia,serif;margin-right:2px}' +
+    '.dk-wurow{margin:0 0 6px;padding:5px 9px;border-radius:10px;background:#eef4fb;font-size:13px;color:#1f3b5c}.dk-wu{display:inline-block;margin:2px 4px 0 0;padding:1px 8px;border-radius:999px;background:#fff;border:1px solid #c9d6e6;font-weight:700}' +
+    '.dk-wu.ok{color:#1f6b3a;border-color:#9ccfab}.dk-wu.mid{color:#9a6a10;border-color:#e7c98a}.dk-wu.bad{color:#c0392b;border-color:#e3a99f}' +
     '.dk-sub{margin-top:8px;padding:8px 10px;border-radius:10px;background:#f5efe0;font-size:14px}.dk-sub .dk-hw{font:700 16px Georgia,serif;color:#1f3b5c}' +
     '.dk-note{color:#7a7259;font-size:13px;margin:4px 0}' +
     '.dk-ft{display:flex;flex-wrap:wrap;gap:6px;padding:8px 14px 12px;border-top:1px dashed #e2d6b5}' +
@@ -241,6 +243,37 @@
       (e && e.lv ? '<span class="dk-lv">' + esc(e.lv) + '</span>' : '') +
       '<span class="dk-star"></span><button type="button" class="dk-b dk-x" data-dk-close title="關閉">✕</button></div>';
   }
+  // ---------- WORD UP（已購買的網頁版）：這個字在哪個單元、孩子熟不熟（資料是家長在電腦登入 WORD UP 後讀取的 status.json） ----------
+  var wu = null;
+  function wordup() {
+    if (!wu) wu = fetch('/english-quiz/vocab/wordup/status.json?v=' + V).then(function (r) { return r.json(); }).then(function (d) {
+      var idx = {};
+      Object.keys(d.units || {}).forEach(function (u) { (d.units[u].words || []).forEach(function (w) { idx[w.toLowerCase()] = { u: u, name: d.units[u].name, w: w }; }); });
+      d.idx = idx; return d;
+    }).catch(function () { wu = null; return null; });
+    return wu;
+  }
+  var WU_CLS = { '熟記': 'ok', '不太熟': 'mid', '很模糊': 'bad', '沒印象': 'bad' };
+  function wordupHtml(e, word) {
+    var keys = [norm(word)]; if (e) keys.push(e.key, e.from, e.base && e.base.key);
+    return wordup().then(function (d) {
+      if (!d) return '';
+      var hit = null; keys.forEach(function (k) { if (!hit && k && d.idx[k]) hit = d.idx[k]; });
+      if (!hit) return '';
+      var me = who(), people = (me === 'PARENT' || me === 'TEST' || !me) ? Object.keys(d.users || {}) : [me];
+      var mine = {}; try { mine = JSON.parse(get('vocabWords:' + me) || '{}') || {}; } catch (er) {}
+      var low = hit.w.toLowerCase();
+      var tags = people.map(function (n) {
+        var u = d.users && d.users[n]; if (!u) return '';
+        var st = u.words && u.words[hit.w];
+        var t = st ? st[0] + (st[1] ? ' ★' : '') : '還沒背';
+        if (n === me && mine[low] === 'm') t += '（本站測驗已答對）';
+        return '<span class="dk-wu ' + (st ? WU_CLS[st[0]] || '' : '') + '">' + (people.length > 1 ? esc(n) + '：' : '') + esc(t) + '</span>';
+      }).join('');
+      return '<div class="dk-wurow">🃏 WORD UP <b>' + esc(hit.name) + '</b> ' + tags + '</div>';
+    });
+  }
+
   function open(word, rect) {
     addCss(); close();
     lastWord = word;
@@ -256,6 +289,7 @@
         '<a href="' + BASE + '?q=' + encodeURIComponent(w) + '&edit=1" target="_blank" rel="noopener">✏️ 自己加字卡</a></div>';
       place(me, rect);
       record(e, w);
+      wordupHtml(e, word).then(function (h) { if (h && me === popEl) { var bd = me.querySelector('.dk-bd'); if (bd) bd.insertAdjacentHTML('afterbegin', h); place(me, rect); } });
       var st = me.querySelector('.dk-star');
       if (st) st.innerHTML = window.Cards ? Cards.btn(cardOf(e, w), true)
         : '<button type="button" class="ck-star" title="存成字卡" data-card="' + esc(JSON.stringify(cardOf(e, w))) + '">☆<span class="t">存字卡</span></button>';
@@ -336,5 +370,5 @@
   addEventListener('scroll', function () { if (chipEl) { hideChip(); chipSoon(); } }, { passive: true });
 
   window.Dict = { open: open, lookup: lookup, prefix: prefix, searchZh: searchZh, shortZh: shortZh, posOf: posOf, linesHtml: linesHtml, extLinks: extLinks,
-    say: say, history: history, record: record, flush: flush, blocked: blocked, who: who, esc: esc, needCards: needCards, needPoints: needPoints, tokenOf: tokenOf, cardOf: cardOf, V: V };
+    say: say, wordupHtml: wordupHtml, history: history, record: record, flush: flush, blocked: blocked, who: who, esc: esc, needCards: needCards, needPoints: needPoints, tokenOf: tokenOf, cardOf: cardOf, V: V };
 })();
