@@ -89,6 +89,7 @@
 - WORD UP 沒有匯出、沒有 API，題目、中文、例句、音檔有版權，不搬進學習館；做法是放入口連結，加上家長在**電腦**的內建瀏覽器登入後讀取進度（雲端版不能登入使用者的帳號）。
 - 已做：首頁卡片「WORD UP｜全民英檢單字＋模擬試題」、App 入口一張（都連到 app.wordup.com.tw，另開分頁，`sw.js` CACHE `bm-app-v5`）；字典小框顯示「🃏 WORD UP 單元名稱＋熟悉度」（讀 `/english-quiz/vocab/wordup/status.json`；學生看自己的，PARENT／TEST 看兩人的；本站測驗答對的字加註「本站測驗已答對」），程式在 `dict/dict.js` 的 `wordupHtml()`，dict.js 內部版本 `V = '20261118b'`。
 - **2026-11-18（電腦版）**：兩人的 WORD UP 熟悉度與 GEPT 成績已讀進 english-quiz（`vocab/wordup/status.json`、`gept.json`，成績表在 `/english-quiz/vocab/wordup/` 上方，細節見 english-quiz 的 CLAUDE.md）。首頁（使用者要求）：新增卡片「📊 WORD UP 成績與單字熟悉度」連到 `/english-quiz/vocab/wordup/`（放在 WORD UP 卡片後面、空位卡片前面）；**刪掉「英文聽力高頻句練習」卡片**（和美式生活館都連到 daily_life_listening，重複）。App 入口頁 `app/index.html` 也在 WORD UP 方塊後面加了同樣的「📊 WORD UP 成績與單字熟悉度」方塊，`sw.js` CACHE 改成 `bm-app-v6`。同一天首頁卡片名稱（使用者定）：段考題庫卡片＝「國中段考題庫大全」；英文測驗系統卡片＝「Grammar Course Hub｜文法課程總目錄」（中文保留，英文原本的 English Quiz 和中文對不上），說明改成目前內容（兩期課程、文法 20 單元、2000 字）。
+- **單字學習總目錄 `/vocab/`（2026-11-18 使用者要求）**：首頁一張「🔤 Vocabulary Hub｜單字學習總目錄」卡片（取代原本的「圖解單字」「WORD UP｜全民英檢單字＋模擬試題」兩張），點進 `vocab/index.html`：01 圖解單字（/vocab-king/）、02 國中2000字．分科練習（/english-quiz/vocab/）、03 WORD UP（外部，另開分頁）、04 我的字卡（/cards/），下面快速連結：我的字卡、查字典、查詢紀錄。**「📊 WORD UP 成績與單字熟悉度」使用者指定留在首頁**，不放進單字總目錄。新的單字網站之後加在這一頁。App 入口一致：WORD UP 方塊換成 Vocabulary Hub 方塊（我的字卡方塊保留，等於網頁右上角的按鈕），`sw.js` CACHE `bm-app-v7`。
 - 待辦（等使用者選）：① WORD UP 剩下 51 個複習單元（自編內容）② ~~GEPT 10 回成績整理進學習館~~（11-18 已做）③ 自己出題的全民英檢初級形式練習（聽力、閱讀，照段考題庫規則）④ 熟悉度定期更新（電腦）。
 
 ## 連續學習紅利＋稱讚畫面（2026-10-18）
