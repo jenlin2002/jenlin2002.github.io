@@ -83,6 +83,13 @@
 - 載入方式：`points.js` 會自動載入 `/dict/dict.js?v=20261118a`（7 份副本一致；也開放了 `Points.tokenOf`）；沒載入 points.js 的頁面（文法講解、各種投影片、目錄頁）直接在 `</body>` 前加 `<script src="/dict/dict.js?v=20261118a" defer></script>`。查字典不會跳出登入關卡，按 ☆ 存字卡時才載入 points.js／cards.js。改 dict.js 要把 v 一起改。
 - 這個 repo：`dict/dict.js`、`dict/index.html`、`dict/data/`、`tools/dict/build_dict.py`；`index.html` 右上角「🔍 查字典」、`app/index.html` 一張「查字典」、`cards/index.html` 上方連結、`sw.js` CACHE `bm-app-v4`；`cards/fixkit.js` 的 kit 多存 `box`；`points.js?v=20261118a`。
 
+## WORD UP（已購買的網頁版）整合（2026-11-18 手機雲端版）
+
+- 使用者在 WORD UP 網頁版（app.wordup.com.tw）有兩本書：《全民英檢初級單字一本通》（背單字）、《準！GEPT 新制全民英檢初級初試 10 回》（聽力＋閱讀模擬試題，2026-11-18 進度 12%）。使用者說的「全民英檢」就是第二本，也在 WORD UP 裡。
+- WORD UP 沒有匯出、沒有 API，題目、中文、例句、音檔有版權，不搬進學習館；做法是放入口連結，加上家長在**電腦**的內建瀏覽器登入後讀取進度（雲端版不能登入使用者的帳號）。
+- 已做：首頁卡片「WORD UP｜全民英檢單字＋模擬試題」、App 入口一張（都連到 app.wordup.com.tw，另開分頁，`sw.js` CACHE `bm-app-v5`）；字典小框顯示「🃏 WORD UP 單元名稱＋熟悉度」（讀 `/english-quiz/vocab/wordup/status.json`；學生看自己的，PARENT／TEST 看兩人的；本站測驗答對的字加註「本站測驗已答對」），程式在 `dict/dict.js` 的 `wordupHtml()`，dict.js 內部版本 `V = '20261118b'`。
+- 待辦（等使用者選）：① WORD UP 剩下 51 個複習單元（自編內容）② GEPT 10 回的成績在電腦上讀取後整理進學習館 ③ 自己出題的全民英檢初級形式練習（聽力、閱讀，照段考題庫規則）④ 熟悉度定期更新（電腦）。
+
 ## 連續學習紅利＋稱讚畫面（2026-10-18）
 
 - 送出測驗後跳出稱讚卡（得幾點、連續第幾天、還差幾點到 100 點）；每跨過 100 點跳出大的恭喜兌換畫面。
