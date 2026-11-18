@@ -83,6 +83,12 @@
   if (!GUEST_ENABLED && get('pointsGuest')) clearGuest();   // 關閉訪客模式後，清掉裝置上殘留的訪客身分
   function needGate() { return !anyToken() && !guestName(); }
 
+  // 全站字典（2026-11-18）：點兩下／長按英文字查字典（/dict/dict.js）
+  (function () {
+    if (window.Dict || document.querySelector('script[src*="/dict/dict.js"]')) return;
+    var ds = document.createElement('script'); ds.src = '/dict/dict.js?v=20261118a'; ds.defer = true;
+    (document.head || document.documentElement).appendChild(ds);
+  })();
   var API = window.Points = {};
   if (!url()) { API.enabled = false; API.earn = function () { return Promise.resolve(null); }; API.open = function () {}; API.mount = function () {}; return; }
   API.enabled = true;
@@ -851,6 +857,7 @@
   API.call = call;
   API.who = curName;
   API.auth = function (name, why) { name = String(name || curName() || '').trim().toUpperCase(); return name ? ensureAuth(name, why || '輸入 PIN，才能使用你的字卡') : Promise.resolve(''); };
+  API.tokenOf = function (name) { return tokenOf(String(name || '').trim().toUpperCase()); };
   API.earn = function (o) {
     o = o || {};
     var name = String(o.name || curName() || '').trim().toUpperCase();

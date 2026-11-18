@@ -53,6 +53,7 @@
   function make(cfg) {
     addCss();
     var k = { name: cfg.name, status: 'open', round: 0, fixing: [], pending: false, skipped: false, score: 0, total: 0 };
+    k.box = cfg.box || cfg.host;   // 全站字典（/dict/dict.js）：這一份還沒送出成績時，裡面的字不能查
     kits.push(k);
     var bar = document.createElement('div'); bar.className = 'fk-bar'; bar.hidden = true;
     cfg.host.parentNode.insertBefore(bar, cfg.host);

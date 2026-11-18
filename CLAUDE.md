@@ -73,6 +73,16 @@
 - 各站接法：圖解單字 `topic.html`（單字卡 ☆、三種測驗答錯自動加入）；英文測驗系統 `vocab/vocab.js`（國中2000字單字卡頁 ☆，會自動載入 points.js）、`grammar2/gquiz.js`（單字區測驗答錯自動加入）、`eqfix.js`（每週測驗的單字題 ☆、答錯自動加入）；國家地理閱讀 `points-glue.js`（Vocabulary 卡 ☆、克漏字答錯自動加入）；美式生活館 `engine.js`、`units.html`（場景單字、你要說的、你會聽到的句子 ☆）。段考題庫沒有接（題型不是單字卡）。
 - 這個 repo：`cards/cards.js`、`cards/index.html`、`cards/fixkit.js`（國家地理閱讀那份的副本）；`index.html` 右上角多「📇 我的字卡」、`points.js?v=20261117a`；`app/index.html` 多一張「我的字卡」、`sw.js` CACHE 改 `bm-app-v3`。
 
+## 全站字典（2026-11-18 使用者要求，手機雲端版）
+
+- 各單元的英文（文章、文法講解、對話、投影片、單字卡、測驗解答）都能查字典：電腦**點兩下**英文字、手機平板**長按**（選取 1～3 個英文字會出現「🔍 查字典」按鈕）→ 小框顯示中文意思、程度（國中／高中）、原形（went→go、bears→bear）、🔊 發音（瀏覽器語音，沒有語音的裝置不會出錯）、☆ 存字卡、劍橋／Yahoo 外部字典、📖 字典頁、✏️ 自己加字卡（外部字典查到的意思可以貼上、改好再存成字卡）。
+- **測驗還沒送出成績時不能查**（跳出「🔒 測驗還沒送出成績，先不能查字典喔！」）；送出後看解答、訂正中可以查（一題一題的英文測驗系統、美式生活館是「這一題還沒送出」不能查）。判斷寫在 `/dict/dict.js` 的 `blocked()`：段考題庫 `#examSubmitBtn`＋body `exam-locked`／`.q.fixing`、文法與單字測驗 `[data-act="submit"]`、每週測驗 `#nextBtn` 的 `data-fk-stage="pick"`、圖解單字 `#go`「送出成績」、fixkit 的 `kit.status==='open'`＋`kit.box`、美式生活館 `.qtop` 那一題的 `button.next` 還沒啟用。**新做的測驗**：照這些既有寫法就會自動擋；不一樣的寫法用 `(window.DictGuard = window.DictGuard || []).push(el => 要擋就回 true)`。不想被查的區塊加 `data-dict-off`。
+- 字典資料 `/dict/data/a.json～z.json`（首頁 repo，約 3.6 萬個常用字＋2.8 萬個變化形，共 2.7 MB，查哪個字母才下載那一份）、`zh.json`（中文查英文用）；由首頁 repo `tools/dict/build_dict.py` 從 ECDICT（MIT 授權，`dict/data/LICENSE-ECDICT.txt`）產生，中文用 OpenCC s2twp 轉台灣繁體。
+- 字典頁 `/dict/`（首頁右上角「🔍 查字典」、App 入口、我的字卡頁上方都有連結）：輸入英文（列出開頭相同的字）或中文（列出意思裡有這個詞的字）查；「🕘 查詢紀錄」（`/dict/#hist`）看自己查過哪些字、查了幾次，可排序、存字卡、刪除。
+- 查詢紀錄：先存這台裝置（localStorage `dictHist:<登入者>`），有登入憑證時批次送到存摺試算表「查詢紀錄」分頁（Code.gs `dictlog／dictlist／dictdel`，`dictQ:<登入者>` 是還沒送出的佇列）。**要重新部署 Apps Script 才會同步到雲端**，沒部署前只記在各裝置。
+- 載入方式：`points.js` 會自動載入 `/dict/dict.js?v=20261118a`（7 份副本一致；也開放了 `Points.tokenOf`）；沒載入 points.js 的頁面（文法講解、各種投影片、目錄頁）直接在 `</body>` 前加 `<script src="/dict/dict.js?v=20261118a" defer></script>`。查字典不會跳出登入關卡，按 ☆ 存字卡時才載入 points.js／cards.js。改 dict.js 要把 v 一起改。
+- 這個 repo：`dict/dict.js`、`dict/index.html`、`dict/data/`、`tools/dict/build_dict.py`；`index.html` 右上角「🔍 查字典」、`app/index.html` 一張「查字典」、`cards/index.html` 上方連結、`sw.js` CACHE `bm-app-v4`；`cards/fixkit.js` 的 kit 多存 `box`；`points.js?v=20261118a`。
+
 ## 連續學習紅利＋稱讚畫面（2026-10-18）
 
 - 送出測驗後跳出稱讚卡（得幾點、連續第幾天、還差幾點到 100 點）；每跨過 100 點跳出大的恭喜兌換畫面。
