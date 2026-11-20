@@ -99,8 +99,25 @@
     return ds;
   }
   function speak(c) {
-    if (c.audio) { var a = new Audio(c.audio); a.play().catch(function () { tts(c.en); }); return; }
+    if (c.audio) { clip(c.audio, function () { oldPath(c); }); return; }
     tts(c.en);
+  }
+  // 播放一段音檔；網址有 #t=開始,結束（英文測驗系統的合併音檔 all.mp3）就播到結束時間停
+  function clip(url, fail) {
+    var a = new Audio(url), failed = false, m = /#t=[\d.]+,([\d.]+)/.exec(url);
+    var f = function () { if (failed) return; failed = true; fail(); };
+    if (m) { var end = +m[1]; a.addEventListener('timeupdate', function () { if (a.currentTime >= end) a.pause(); }); }
+    a.addEventListener('error', f);
+    a.play().catch(function (e) { if (!(e && e.name === 'AbortError')) f(); });
+  }
+  // 舊字卡存的是單一小音檔（…/audio/uNN/w-01.mp3），合併後已刪掉：查同資料夾的 all.json 找到合併檔的位置
+  function oldPath(c) {
+    var i = c.audio.lastIndexOf('/audio/');
+    if (i < 0 || /#t=/.test(c.audio)) { tts(c.en); return; }
+    var base = c.audio.slice(0, i + 1), key = c.audio.slice(i + 1), dir = c.audio.slice(0, c.audio.lastIndexOf('/') + 1);
+    fetch(dir + 'all.json').then(function (r) { return r.json(); }).then(function (j) {
+      if (j[key]) clip(base + j[key], function () { tts(c.en); }); else tts(c.en);
+    }).catch(function () { tts(c.en); });
   }
   function tts(t) {   // 沒有語音引擎的裝置（例如華為平板）就不出聲
     try { if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return; speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(t); u.lang = 'en-US'; u.rate = 0.9; speechSynthesis.speak(u); } catch (e) {}
