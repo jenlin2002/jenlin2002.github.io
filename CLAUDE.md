@@ -104,3 +104,9 @@
 
 - **GitHub Pages 部署卡住（2026-10-18）**：PR #10 合併後「pages build and deployment」一直排隊／進行中（沒有任何 job），網站停在上一版。處理方式：到 Actions 取消那次部署，再推一個新的 commit 到 main（例如更新這份 CLAUDE.md）觸發新的部署；單純 Re-run 那次不一定會好。查部署狀態：Actions → pages build and deployment。
 
+
+## 寫作園地（2026-11-21）
+
+- 首頁卡片「Writing Hub｜寫作園地」→ `/english-quiz/writing/`（內容在 english-quiz repo，說明見那邊 CLAUDE.md「寫作園地」一節）。
+- 這個 repo 的 `functions/api/write-check.js`：登入者送短文 → LanguageTool 文法拼字＋Cloudflare Workers AI 老師建議（綁定名稱 `AI`，沒綁定時回 `aiReady:false`）。開啟步驟在 `CLOUDFLARE-SETUP.md` 第九節（家長自己在 Cloudflare 後台操作）。
+- 同一天：`cards/index.html` 播放支援英文測驗系統的合併音檔（`all.mp3#t=`），舊字卡的小音檔路徑會查 `all.json` 對應。

@@ -137,3 +137,14 @@
 **2026-11-06 進度：exam-bank 已改 Private ✅**（GitHub 頁面、原始檔對外都 404；部署 #28 成功；bmlearn 上段考題庫頁面、聽力 zip、社會 PDF 經 `/api/big` 都 200，大小正確）。
 - 遇到的問題：workflow 的 `actions/checkout` 預設把 GITHUB_TOKEN 留在 git 設定，git 讀子站時優先用它（只能讀首頁 repo）→ Private 子站「Repository not found」。已加 `persist-credentials: false`。
 - 「準備」步驟會印出 `REPOS_TOKEN` 對 5 個子站的 GitHub 回應碼（200＝讀得到、401＝金鑰無效、404＝金鑰沒勾這個 repo），出問題先看這裡。
+
+## 九、寫作園地的 AI 老師建議（2026-11-21，Cloudflare Workers AI，免費額度）
+
+寫作園地的「🔍 檢查我的作文」會呼叫 `/api/write-check`（`functions/api/write-check.js`）：文法拼字用 LanguageTool（免費、不用設定），**AI 老師建議要在 Cloudflare 開一個 Workers AI 綁定**（沒開時頁面顯示「AI 建議還沒啟用」，其他功能照常）。
+1. Cloudflare → Workers & Pages → **bmlearn** → **Settings** → **Bindings** → **Add** → 選 **Workers AI**。
+2. Variable name 填 **`AI`**（大寫，一定要一樣）→ Save。
+3. 回 GitHub 的 Actions 按一次 Run workflow（重新部署，綁定才會生效）。
+4. 測試：登入網站 → 寫作園地 Unit 1 → 第 ⑤ 步寫幾句 → 按「🔍 檢查我的作文」，下面出現「🌟」開頭的 AI 建議就成功了。
+- 費用：Workers AI 每天有免費額度（以 Cloudflare 官網公告為準），兩個孩子一天寫幾篇用不完；網頁每篇每天最多檢查 10 次。超過免費額度時只是當天 AI 沒回應，不會自動扣錢（除非你另外升級成付費方案）。
+- 只有登入的人（USER_MAP 裡的帳號）能用；作文只送到 Cloudflare 和 LanguageTool 檢查，Cloudflare 表示 Workers AI 不會拿客戶資料訓練模型。
+- 想換模型：Variables 加 `AI_MODEL`（例如 `@cf/meta/llama-3.1-8b-instruct`），預設用 `@cf/meta/llama-3.3-70b-instruct-fp8-fast`。
