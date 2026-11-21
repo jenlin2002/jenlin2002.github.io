@@ -1,6 +1,6 @@
 # 把 6 個學習網站 repo 合成一個網站，部署到 Cloudflare Pages（2026-11-04）
 # 為什麼合在一起：登入憑證、quizStudentName、單字進度都存在 localStorage，要同一個網址才能共用。
-# 網址結構和 GitHub Pages 一樣：/（首頁）、/english-quiz/、/vocab-king/、/daily_life_listening/、/nat-geo-reading/、/exam-bank/
+# 網址結構和 GitHub Pages 一樣：/（首頁）、/english-quiz/、/vocab-king/、/daily_life_listening/、/nat-geo-reading/、/exam-bank/、/textbook-review/
 # 需要的 GitHub Secrets（使用者自己在 GitHub → Settings → Secrets and variables → Actions 輸入）：
 #   CLOUDFLARE_API_TOKEN   權限：Account → Cloudflare Pages → Edit
 #   CLOUDFLARE_ACCOUNT_ID  Cloudflare 後台右側的 Account ID
@@ -26,7 +26,7 @@ jobs:
       PROJECT: bmlearn                       # 網址 https://bmlearn.pages.dev（2026-11-05 從 learn 改名，使用者要好打的網址）
       OLD_PROJECT: learn                     # 舊網址 learn-6td.pages.dev：只放一個轉址到新網址；確定沒人用、在 Cloudflare 刪掉 learn 專案後可把這行和「舊網址轉址」步驟刪掉
       SITE_URL: https://bmlearn.pages.dev
-      SUBSITES: english-quiz vocab-king daily_life_listening nat-geo-reading exam-bank
+      SUBSITES: english-quiz vocab-king daily_life_listening nat-geo-reading exam-bank textbook-review   # textbook-review（課本習作重點複習，2026-11-21）一開始就是 Private，REPOS_TOKEN 要勾它
       REPOS_TOKEN: ${{ secrets.REPOS_TOKEN }}
     defaults:
       run:

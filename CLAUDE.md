@@ -17,6 +17,13 @@
 - `points.js`（各站副本內容相同）：在 Cloudflare 網址打開時問 `/api/me`，自動設定 `quizStudentName`、不出現「你是誰？」關卡；第一階段每台裝置第一次只問一次自己的 PIN；第二階段（Code.gs 加 `cfUser_`、Cloudflare 設 `POINTS_SECRET`）點數改走 `/api/points`，不用 PIN。登出會連 Google 登入一起登出。在 jenlin2002.github.io 舊網址一切照舊（2026-11-05 起舊網址改成轉到 bmlearn.pages.dev，使用者接受不再用舊 PIN 版）。
 - 後台設定步驟、測試方法、第二階段 Code.gs 改法都在首頁 repo 的 `CLOUDFLARE-SETUP.md`。密碼、金鑰一律使用者自己在 Cloudflare／GitHub／Google 後台輸入。
 - 之後新做的頁面照舊用相對路徑；子站寫死的 `https://jenlin2002.github.io/` 部署時會自動改成 `/`。Cloudflare Pages 單檔上限 25 MB、整站 20000 個檔（2026-11-04 約 15300 個），大檔（>24 MB）部署時自動改由 `/api/big` 轉給登入的人（2026-11-05 起；要有 `REPOS_TOKEN`，repo 改 Private 也能讀；金鑰到期要重做，見首頁 repo `CLOUDFLARE-SETUP.md` 第八節）。寫頁面照舊連原本的相對路徑，不用改。
+## 課本習作重點複習 textbook-review（2026-11-21 公司電腦）
+
+- 新子站 repo `jenlin2002/textbook-review`（**一開始就是 Private**、不開 GitHub Pages），網址 `https://bmlearn.pages.dev/textbook-review/`；已加進 workflow 的 `SUBSITES`，首頁「段考題庫」卡片後面加了一張卡。
+- 內容：依興雅國中 115 學年度版本表，Melissa 七年級（翰林國文、英語 iE1、社會）、Branden 八年級（翰林國文、英語 iE3＋康軒社會），80 課、547 題；重點／必背／習作練習，依三次段考分組。資料在 `data/*.js`，來源是 `OneDrive\興雅國中\XXY\課本` 的課本與教用習作 PDF（康軒八年級歷史、公民從 `DAE5310\3.iso` 取出，亂碼頁用 Windows OCR）。題目為改寫，不是原題。
+- 送成績用段考題庫同一個 Apps Script（`SHEET_ENDPOINT` 與 exam-bank `sync.js` 相同）；還沒接 `points.js`、訂正補點規則、全站字典。
+- **待使用者做**：`REPOS_TOKEN`（fine-grained token `bmlearn-deploy`）→ Repository access 加勾 `textbook-review`，否則部署 clone 失敗；首頁 repo push 前要先做。
+
 ## 使用者與工作方式（四個 repo 共用同一段，2026-10-13）
 
 - 使用者在三個地方用 Claude Code：**家裡電腦、公司電腦**（兩台都有 GitHub Desktop，用它 Pull／Push）、**外出用手機 App（雲端版）**。學習成長網站已經做很久了，不用從頭介紹。
