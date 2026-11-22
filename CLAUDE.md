@@ -21,7 +21,7 @@
 
 - 新子站 repo `jenlin2002/textbook-review`（**一開始就是 Private**、不開 GitHub Pages），網址 `https://bmlearn.pages.dev/textbook-review/`；已加進 workflow 的 `SUBSITES`，首頁「段考題庫」卡片後面加了一張卡。
 - 內容：依興雅國中 115 學年度版本表，Melissa 七年級（翰林國文、英語 iE1、社會）、Branden 八年級（翰林國文、英語 iE3＋康軒社會），80 課、547 題；重點／必背／習作練習，依三次段考分組。資料在 `data/*.js`，來源是 `OneDrive\興雅國中\XXY\課本` 的課本與教用習作 PDF（康軒八年級歷史、公民從 `DAE5310\3.iso` 取出，亂碼頁用 Windows OCR）。題目為改寫，不是原題。
-- 送成績用段考題庫同一個 Apps Script（`SHEET_ENDPOINT` 與 exam-bank `sync.js` 相同）；還沒接 `points.js`、訂正補點規則、全站字典。
+- 送成績用段考題庫同一個 Apps Script（`SHEET_ENDPOINT` 與 exam-bank `sync.js` 相同）。2026-11-22 接上 `points.js`（第 8 份副本，`textbook-review/points.js`；改主檔要一起同步）：自動帶登入者，整課做完送出每題 1 點，只練錯題不算點。還沒接訂正補點、全站字典。
 - `REPOS_TOKEN`（fine-grained token `bmlearn-deploy`，Only select repositories、Contents 唯讀）2026-11-22 已加勾 `textbook-review`，現在勾了 6 個：english-quiz、nat-geo-reading、daily_life_listening、exam-bank、vocab-king、textbook-review。以後新增 Private 子站都要回來加勾，**不要改成 All repositories**（會連 stock-dashboard 等私人 repo 都能讀）。
 - 2026-11-21 查 repo 公開狀態：Private＝exam-bank、textbook-review、english-quiz-plan、stock-dashboard；Public＝首頁 repo（刻意）、stock（GitHub Pages 短網址）、以及 **english-quiz、vocab-king、daily_life_listening、nat-geo-reading 這 4 個子站還是 Public**。使用者說「之後再來改」，改法照 `CLOUDFLARE-SETUP.md` 第八節（先確認 token 有勾 → Make private → Run workflow）。改完可用 `https://api.github.com/users/jenlin2002/repos` 對照確認。
 
