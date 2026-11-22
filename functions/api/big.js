@@ -4,7 +4,8 @@
 // 沒有 REPOS_TOKEN：直接轉到 GitHub 原始檔（只有 Public repo 能用）。
 import { whoAmI } from '../_auth.js';
 
-const REPOS = ['english-quiz', 'vocab-king', 'daily_life_listening', 'nat-geo-reading', 'exam-bank'];
+// textbook-review（2026-11-22）：課本教用 PDF 有 4 個超過 24 MB（翰林地理 L1/L4、康軒地理 L1、iE3 U5）
+const REPOS = ['english-quiz', 'vocab-king', 'daily_life_listening', 'nat-geo-reading', 'exam-bank', 'textbook-review'];
 
 export async function onRequestGet({ request, env }) {
   const p = new URL(request.url).searchParams.get('p') || '';
