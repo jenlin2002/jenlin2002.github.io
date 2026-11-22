@@ -68,7 +68,13 @@
   var GUEST_ENABLED = false;
   // ---------- 登入憑證：PIN 驗證通過後由後端發給，存在這台裝置（同一個網站的所有頁面共用） ----------
   function tokens() { try { return JSON.parse(get('quizPointsTokens') || '{}') || {}; } catch (e) { return {}; } }
-  function tokenOf(n) { if (cf.proxy && n === cf.name) return 'cf'; return tokens()[n] || ''; }   // 'cf'：/api/points 代轉時由 Cloudflare 證明身分
+  // Google（Cloudflare）登入時，登出不再清掉這台裝置記住的 PIN 憑證（2026-11-22 使用者：每次 Google 登入後都還要打 PIN）；
+  // 所以改成：Google 登入者只能用「自己」的憑證（家長 PARENT 例外），換別人用同一台裝置也拿不到上一個人的憑證去兌換。
+  function tokenOf(n) {
+    if (cf.proxy && n === cf.name) return 'cf';   // 'cf'：/api/points 代轉時由 Cloudflare 證明身分
+    if (cf.name && cf.name !== ADMIN && n !== cf.name) return '';
+    return tokens()[n] || '';
+  }
   function setToken(n, t) { var o = tokens(); o[n] = t; set('quizPointsTokens', JSON.stringify(o)); endGuest(); }
   function clearToken(n) { var o = tokens(); delete o[n]; set('quizPointsTokens', JSON.stringify(o)); }
   function anyToken() { var o = tokens(); return Object.keys(o).some(function (k) { return !!o[k]; }); }
@@ -277,7 +283,7 @@
   }
   function loadKids() {
     shownKids().forEach(function (k) {
-      var own = tokenOf(k), tok = own || tokenOf(ADMIN);   // 孩子自己的憑證，或家長的憑證（只能看）
+      var own = tokenOf(k) || (tokens()[k] || ''), tok = own || tokenOf(ADMIN) || (tokens()[ADMIN] || '');   // 孩子自己的憑證，或家長的憑證（這裡只讀餘額顯示在橫幅，不能兌換）
       if (!tok) { kidBal[k] = undefined; return; }
       call({ action: 'balance', name: k, token: tok }).then(function (d) {
         if (d && d.ok) { kidBal[k] = d.balance; kidStreak[k] = d.streak || 0; kidPractice[k] = !!d.practice; kidFail[k] = false; state.rules = d.rules || state.rules; }
@@ -288,7 +294,9 @@
     renderPill();
   }
   function logoutAll() {
-    endGuest(); Object.keys(tokens()).forEach(clearToken); kidBal = {}; state.balance = null; state.ledger = []; state.force = '';   // 家長建立的帳號也要一起登出
+    endGuest();
+    if (!cf.name) Object.keys(tokens()).forEach(clearToken);   // 家長建立的帳號也要一起登出；Google 登入時保留 PIN 憑證，下次 Google 登入不用再打 PIN
+    kidBal = {}; state.balance = null; state.ledger = []; state.force = '';
     if (mask) mask.hidden = true;
     if (adminMask) adminMask.hidden = true;
     if (cf.name) return cfLogout();   // Cloudflare 登入：連 Google 登入一起登出，換人重新登入

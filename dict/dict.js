@@ -26,7 +26,7 @@
       (document.head || document.documentElement).appendChild(s);
     });
   }
-  function needPoints() { return loadScript('/points.js?v=20261118a', function () { return !!window.Points || !!document.querySelector('script[src*="points.js"]'); }); }
+  function needPoints() { return loadScript('/points.js?v=20261122a', function () { return !!window.Points || !!document.querySelector('script[src*="points.js"]'); }); }
   function needCards() { return needPoints().then(function () { return loadScript('/cards/cards.js?v=20261117a', function () { return !!window.Cards; }); }); }
 
   // ---------- 字典資料 ----------
