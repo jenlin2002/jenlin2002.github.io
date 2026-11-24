@@ -42,7 +42,8 @@
       if (!d || !d.name) return null;
       cf.name = String(d.name).trim().toUpperCase(); cf.proxy = !!d.proxy;
       if (get('pointsGuest')) set('pointsGuest', '');
-      if (cf.name !== ADMIN && String(get('quizStudentName') || '').toUpperCase() !== cf.name) {
+      // 家長（PARENT）也一樣設定（2026-11-23）：原本跳過家長，段考題庫顯示「尚未登入」、不能交卷；PARENT 交卷不寫成績單、只記測試存摺
+      if (String(get('quizStudentName') || '').toUpperCase() !== cf.name) {
         var had = get('quizStudentName');
         set('quizStudentName', cf.name); state.name = cf.name;
         if (had) { location.reload(); return new Promise(function () {}); }   // 這台裝置上一個人留下別的名字：換成登入者後重新整理一次
