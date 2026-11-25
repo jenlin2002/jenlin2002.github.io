@@ -119,3 +119,4 @@
 - 首頁卡片「Writing Hub｜寫作園地」→ `/english-quiz/writing/`（內容在 english-quiz repo，說明見那邊 CLAUDE.md「寫作園地」一節）。
 - 這個 repo 的 `functions/api/write-check.js`：登入者送短文 → LanguageTool 文法拼字＋Cloudflare Workers AI 老師建議（綁定名稱 `AI`，沒綁定時回 `aiReady:false`）。開啟步驟在 `CLOUDFLARE-SETUP.md` 第九節（家長自己在 Cloudflare 後台操作）。
 - 同一天：`cards/index.html` 播放支援英文測驗系統的合併音檔（`all.mp3#t=`），舊字卡的小音檔路徑會查 `all.json` 對應。
+- **School Hub｜學校段考專區（2026-11-25 使用者要求）**：首頁的「國中段考題庫大全」「課本習作重點複習」兩張卡片合成一張「🏫 School Hub｜學校段考專區」，連到新目錄頁 `/school/`（樣式照 `/vocab/`，裡面 01 課本習作重點複習 → /textbook-review/、02 國中段考題庫大全 → /exam-bank/）。兩個網站原本的網址不變；App 入口頁（`app/index.html`）的段考題庫磚沒有動。同一天首頁也加了「🎧 Listening Hub｜聽力訓練」卡片（/english-quiz/listening/）。
