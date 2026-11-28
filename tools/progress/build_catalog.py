@@ -126,6 +126,19 @@ for lv, nm in LV.items():
         items.append(item(gq_label(f), '%s 第 %d 回' % (nm, int(b[1:3])), '/english-quiz/listening/' + b))
     if items:
         g.append({'name': nm, 'items': items})
+# 影片聽力 vNN.html：依頁面副標的程度分組（初級（偏難）算初級、中級～中高級算中級）
+vg = {'初級': [], '中級': [], '中高級': []}
+for f in sorted(glob.glob(os.path.join(EQ, 'listening', 'v[0-9][0-9].html'))):
+    t = rd(f)
+    lv = re.search(r'真人原速・([^・<]+)・', t)
+    lv = lv.group(1) if lv else '中高級'
+    lv = '初級' if lv.startswith('初級') else '中級' if lv.startswith('中級') else '中高級'
+    zh = re.search(r'<h1>[^<]*<span class="zh">(.*?)</span>', t)
+    name = html.unescape(zh.group(1)) if zh else os.path.basename(f)
+    vg[lv].append(item(gq_label(f), '🎬 ' + name, '/english-quiz/listening/' + os.path.basename(f)))
+for lv, items in vg.items():
+    if items:
+        g.append({'name': '影片・' + lv, 'items': items})
 hubs.append({'id': 'listening', 'name': '聽力', 'icon': '🎧', 'url': '/english-quiz/listening/', 'groups': g})
 
 # ---------- 寫作 ----------
